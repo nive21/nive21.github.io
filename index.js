@@ -1146,7 +1146,6 @@ function createDropDown(data, cols) {
         .text((d) => (d[0].toUpperCase() + d.slice(1)))
         .on('pointerdown', function (e, d) {
             console.log("att", d);
-            // changeXAxis(d);
         });
 
     d3.select("#dropdown-menu4")
@@ -1162,7 +1161,6 @@ function createDropDown(data, cols) {
         .text((d) => (d[0].toUpperCase() + d.slice(1)))
         .on('pointerdown', function (e, d) {
             console.log("att", d);
-            // changeXAxis(d);
         });
 
     d3.select("#dropdown-menu5")
@@ -1328,6 +1326,7 @@ function changeXAxis(index) {
     d3.select('#x-axis-label')
         .text(columns[index]);
 
+    isNumericScale = false;
 
     d3.selectAll(".unit").remove();
     d3.select('.unit svg').remove();
