@@ -1125,6 +1125,14 @@ function createDropDown(data, cols) {
             let index = columns.indexOf(d);
             console.log("att", d, index);
             changeXAxis(index);
+
+            if (typeof(Object.keys(attrValuesCount)[0] == "string") || Object.keys(attrValuesCount).length === 2) {
+                // console.log("double")
+                d3.selectAll(".form-check").style("display", "block");
+            } else {
+                // console.log("cont", Object.keys(attrValuesCount))
+                d3.selectAll(".form-check").style("display", "none");
+            }
         });
 
     d3.select("#dropdown-menu3")
@@ -1506,13 +1514,6 @@ function changeTab() {
 function handleClick(radio){
     
     attrSortOder = radio.value;
-    console.log("sort this: ", radio.value, attrSortOder);
-
-    // let index = columns.indexOf(attribute);
-    // d3.selectAll(".unit").remove();
-    // d3.select('.unit svg').remove();
-    // visualize(index);  
-
     updateXAttribute(attribute);
 }
 
