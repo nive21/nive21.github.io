@@ -58,6 +58,7 @@ let unitVisHtMargin = iconSize;
 let imgSVGs = [];
 let attrSortOder = 0; // 0: ascending, 1: descending
 let currSize = 20;
+let prevRadio = null;
 
 let array = [d3.csv('dataset/candy-data.csv'), d3.xml('images/candy.svg')]
 Promise.all(array).then(function (data1) {
@@ -112,7 +113,7 @@ Promise.all(array).then(function (data1) {
     //attribute = 'winPercent';
     //attribute = 'pricePercent';
     setNumericScale();
-    groupByAttribute(currentData, attribute);
+    // groupByAttribute(currentData, attribute);
 
 
     // Niv
@@ -128,9 +129,9 @@ Promise.all(array).then(function (data1) {
 
 
     //cols = Object.keys(currentData[0].data);
-    //visualize(11); //groupByAttribute, create, update
-    createVisualization();
-    updateVisualization();
+    visualize(1); //groupByAttribute, create, update
+    // createVisualization();
+    // updateVisualization();
 
     /* filterData(columns[11], 0, 0.5);
     filterData(columns[11], 0, 0.2); */
@@ -177,6 +178,15 @@ Promise.all(array).then(function (data1) {
         .append("xhtml:body")
         .attr("id", "selection-text")
         .html("<br>Lasso-select datapoints to view stats.<br>")
+
+    // var rad = document.myForm.flexRadioDefault;
+    // for (var i = 0; i < rad.length; i++) {
+    //     rad[i].addEventListener('change', function() {
+    //         console.log("radio ",this.value)
+    //         attrSortOder = this.value;
+    //         updateVisualization();
+    //     });
+    // }
 });
 
 function createVisualization() {
@@ -235,11 +245,18 @@ function updateVisualization() {
         xScale = d3.scaleBand();
 
         // determine order of columns
-        if (attrSortOder === 0)
+        if (attrSortOder == 0){
+            // console.log("asc");
             sortedAxisLabels.sort((a, b) => a.attrName.localeCompare(b.attrName));
-        else sortedAxisLabels.sort((a, b) => b.attrName.localeCompare(a.attrName));
+        }            
+        else {
+            // console.log(attrSortOder, "desc");
+            sortedAxisLabels.sort((a, b) => b.attrName.localeCompare(a.attrName));
+        }
 
         //xScale.domain(Object.keys(attrValuesCount)).range([0, width]).paddingInner(.7).paddingOuter(0.7); // takes string as input
+        // xScale.domain(sortedAxisLabels.map(d => d.attrValue)).range([0, width]).paddingInner(.7).paddingOuter(0.7); // takes string as input
+
         xScale.domain(sortedAxisLabels.map(d => d.attrValue)).range([0, width]).paddingInner(.7).paddingOuter(0.7); // takes string as input
 
         // set number of elements in each column
@@ -1167,7 +1184,7 @@ function createDropDown(data, cols) {
         .attr("aria-disabled", (d, i) => { if (col_types[i] == "string") { return "true"; } })
         .text((d) => (d[0].toUpperCase() + d.slice(1)))
         .on('pointerdown', function (e, d) {
-            console.log("filter", d);
+            // console.log("filter", d);
             filterAxis(d);
         });
 
@@ -1311,7 +1328,7 @@ function changeXAxis(index) {
 function visualize(colindex) {
     attribute = columns[colindex];
     //currentData = groupByAttribute(dataset, attribute);
-    currentData = groupByAttribute(dataset, attribute);
+    currentData = groupByAttribute(currentData, attribute);
     createVisualization();
     updateVisualization();
 }
@@ -1380,12 +1397,6 @@ function filterAxis(colName) {
         from: min,
         to: max,
         step: Math.round((max - min) * 10) / 100,
-        // onStart: function(data) {
-        //     console.log("onStart");
-        // },
-        // onChange: function(data) {
-        //     console.log("onChange");
-        // },
         onFinish: function(data) {
             // console.log("onFinish", data);
             // console.log(data['from'], data['to'])
@@ -1491,3 +1502,17 @@ function changeTab() {
         .classed("active", true)
         .classed("show", true)
 }
+
+function handleClick(radio){
+    
+    attrSortOder = radio.value;
+    console.log("sort this: ", radio.value, attrSortOder);
+
+    // let index = columns.indexOf(attribute);
+    // d3.selectAll(".unit").remove();
+    // d3.select('.unit svg').remove();
+    // visualize(index);  
+
+    updateXAttribute(attribute);
+}
+
