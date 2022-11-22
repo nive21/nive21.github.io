@@ -1126,8 +1126,9 @@ function createDropDown(data, cols) {
             console.log("att", d, index);
             changeXAxis(index);
 
-            if (typeof(Object.keys(attrValuesCount)[0] == "string") || Object.keys(attrValuesCount).length === 2) {
-                // console.log("double")
+            // if (typeof(Object.keys(attrValuesCount)[0]) == "string" || Object.keys(attrValuesCount).length === 2) {
+            if (d == "Candy" ||  Object.keys(attrValuesCount).length === 2) {
+                // console.log("double", Object.keys(attrValuesCount)[0], typeof(Object.keys(attrValuesCount)[0]) )
                 d3.selectAll(".form-check").style("display", "block");
             } else {
                 // console.log("cont", Object.keys(attrValuesCount))
