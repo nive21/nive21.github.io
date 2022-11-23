@@ -1370,9 +1370,9 @@ function changeSize(newSize) {
 function changeShape(shapeID) {
 
     console.log("The selected shape is " + shapeID);
-    // currentFtrs.shape = shape;
-    // if (!useCustomIcons)
-    //     unitVisPadding = iconSize;
+    currentFtrs.shapeId = shapeID;
+    if (!useCustomIcons)
+        unitVisPadding = iconSize;
 
 
     //shape
