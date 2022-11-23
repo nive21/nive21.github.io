@@ -46,3 +46,7 @@ https://www.w3schools.com/jsref/prop_color_value.asp
 https://bl.ocks.org/mbostock/1424037
 https://stackoverflow.com/questions/30474474/jquery-change-function-on-ionslider-not-working 
 https://stackoverflow.com/questions/8838648/onchange-event-handler-for-radio-button-input-type-radio-doesnt-work-as-one
+
+Code credits for long touch/press:
+https://codepen.io/eleviven/pen/eYmwzLp
+https://codepen.io/thetallweeks/pen/AoQjjK

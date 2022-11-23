@@ -179,14 +179,6 @@ Promise.all(array).then(function (data1) {
         .attr("id", "selection-text")
         .html("<br>Lasso-select datapoints to view stats.<br>")
 
-    // var rad = document.myForm.flexRadioDefault;
-    // for (var i = 0; i < rad.length; i++) {
-    //     rad[i].addEventListener('change', function() {
-    //         console.log("radio ",this.value)
-    //         attrSortOder = this.value;
-    //         updateVisualization();
-    //     });
-    // }
 });
 
 function createVisualization() {
@@ -714,6 +706,7 @@ function doubleTapHandler(ev) {
     // detect pointer double taps on chart region
     detectOnePointerDoubleTap();
     detectTwoPointersDoubleTap();
+
     detectMultiplePointersOnScreen();
 }
 
@@ -1123,7 +1116,7 @@ function createDropDown(data, cols) {
         .on('pointerdown', function (e, d) {
 
             let index = columns.indexOf(d);
-            console.log("att", d, index);
+            // console.log("att", d, index);
             changeXAxis(index);
 
             // if (typeof(Object.keys(attrValuesCount)[0]) == "string" || Object.keys(attrValuesCount).length === 2) {
@@ -1517,3 +1510,37 @@ function handleClick(radio){
     updateXAttribute(attribute);
 }
 
+//Code credits: https://codepen.io/eleviven/pen/eYmwzLp
+
+let onlongtouch = false;
+let timer = false;
+
+function touchStart(){
+  if (!timer) {
+    timer = setTimeout(onlongtouch, 800);
+  }
+}
+
+function touchEnd(){
+  if (timer) {
+    clearTimeout(timer)
+    timer = false;
+  }
+}
+
+onlongtouch = function(){
+    // d3.select("#side-panel").style("background-color", "black")
+
+    if (attrSortOder == 0){
+        attrSortOder = 1;
+    } else {
+        attrSortOder = 0;
+    }
+    updateXAttribute(attribute);
+
+}
+
+document.addEventListener("DOMContentLoaded", function(){
+  document.querySelector("#chart").addEventListener("touchstart", touchStart);
+  document.querySelector("#chart").addEventListener("touchend", touchEnd);
+})
