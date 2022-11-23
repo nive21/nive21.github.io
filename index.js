@@ -1110,6 +1110,7 @@ function createDropDown(data, cols) {
 
             let index = columns.indexOf(d);
             console.log("att", d, index);
+            attribute = d;
             changeXAxis(index);
 
             if (d == "Candy" || Object.keys(attrValuesCount).length === 2) {
@@ -1130,7 +1131,6 @@ function createDropDown(data, cols) {
         .text((d) => (d[0].toUpperCase() + d.slice(1)))
         .on('pointerdown', function (e, d) {
             console.log("att", d);
-            // changeXAxis(d);
         });
 
     d3.select("#dropdown-menu4")
@@ -1146,7 +1146,6 @@ function createDropDown(data, cols) {
         .text((d) => (d[0].toUpperCase() + d.slice(1)))
         .on('pointerdown', function (e, d) {
             console.log("att", d);
-            // changeXAxis(d);
         });
 
     d3.select("#dropdown-menu5")
@@ -1366,7 +1365,12 @@ function changeXAxis(index) {
 
     d3.selectAll(".unit").remove();
     d3.select('.unit svg').remove();
-    visualize(index);
+    // visualize(index);
+
+    groupByAttribute(currentData, attribute);
+    createVisualization();
+    updateVisualization();
+
 }
 
 function visualize(colindex) {
