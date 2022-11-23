@@ -13,6 +13,7 @@ let attribute = null;
 let tooltipTriggerList;
 let col_values;
 let col_types;
+let newColor = "#0067cd";
 
 let tip;
 
@@ -43,6 +44,7 @@ let sortedAxisLabels; // keeps sorted order of atrributes on x axis
 let currentFtrs = { color: '#0067cd', shapeId: 2, imgSvgId: 0, size: 20 }; // attributes applied to all data points
 // selections
 let selection = []; // all selected unit vis
+let shapeNum = 7;
 
 /* Multi-touch or multi-pointers */
 // Preserving a pointer's event state during various event phases
@@ -61,6 +63,7 @@ let unitVisPadding = 1.5;
 let imgSVGs = [];
 let attrSortOder = 0; // 0: ascending, 1: descending
 let currSize = 20;
+let lastShape;
 
 let array = [d3.csv('dataset/candy-data.csv'), d3.xml('images/candy.svg')]
 Promise.all(array).then(function (data1) {
@@ -74,8 +77,6 @@ Promise.all(array).then(function (data1) {
         .style('fill', 'brown');
     iconSize = 20;
     imgSVGs.push(svgNode);
-
-    // console.log('above imgSVG', imgSVGs, imgSVG, svgNode);
 
     let data = data1;
     data[0].forEach(d => {
@@ -104,14 +105,24 @@ Promise.all(array).then(function (data1) {
             .attr("transform", "translate(10, 10)")
             .on('pointerdown', function (e, d) {
                 // console.log("att", e['target']['id']);
-                findShape(e['target']['id']);
+                // findShape(e['target']['id']);
+                changeShape(e['target']['id']);
             })
     }
 
-    d3.select("#shapes")
+    lastShape = d3.select("#shapes")
     .append("xhtml:body")
+    .attr("id", "shape-" + shapeNum)
     .html(imgSVG['activeElement']['outerHTML'])
     .style("display", "inline");
+
+    d3.selectAll("#shape-" + shapeNum + " svg")
+    .attr("id", "shape-" + shapeNum);
+
+    lastShape.on('pointerdown', function (e, d) {
+        // console.log("shape num is ", e['explicitOriginalTarget']['parentElement']['id']);
+        changeShape(e['explicitOriginalTarget']['parentElement']['id']);
+    })
 
     d3.select("#shapes body svg")
         .style("fill", "#0067cd")
@@ -548,15 +559,24 @@ function importImgSVG(data) {
     d3.select(svgNode)
         .attr('height', 18)
         .attr('width', 18)
-        .style('fill', 'plum');
+        .style('fill', newColor);
     imgSVGs.push(svgNode);
 
-    console.log('below imgSVG', imgSVGs, imgSVG, svgNode); 
-    
-    d3.select("#shapes")
+    shapeNum += 1;
+
+    lastShape = d3.select("#shapes")
     .append("xhtml:body")
+    .attr("id", "shape-"+shapeNum)
     .html(imgSVG['activeElement']['outerHTML'])
     .style("display", "inline");  
+
+    d3.selectAll("#shape-" + shapeNum + " svg")
+    .attr("id", "shape-"+shapeNum);
+
+    lastShape.on('pointerdown', function (e, d) {
+        // console.log("shape num is ", e['explicitOriginalTarget']['parentElement']['id']);
+        changeShape(e['explicitOriginalTarget']['parentElement']['id']);
+    })
     
     d3.select("#shapes body svg")
         .style("fill", newColor);
@@ -1347,10 +1367,14 @@ function changeSize(newSize) {
     //deselectPoints();
 }
 
-function changeShape() {
-    currentFtrs.shape = shape;
-    if (!useCustomIcons)
-        unitVisPadding = iconSize;
+function changeShape(shapeID) {
+
+    console.log("The selected shape is " + shapeID);
+    // currentFtrs.shape = shape;
+    // if (!useCustomIcons)
+    //     unitVisPadding = iconSize;
+
+
     //shape
     // lasso selection
     // if (selection.length !== 0 && selection.data().length !== 0) {
