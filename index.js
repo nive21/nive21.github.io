@@ -110,7 +110,8 @@ Promise.all(array).then(function (data1) {
 
     d3.select("#shapes")
     .append("xhtml:body")
-    .html(imgSVG['activeElement']['outerHTML']);
+    .html(imgSVG['activeElement']['outerHTML'])
+    .style("display", "inline");
 
     d3.select("#shapes body svg")
         .style("fill", "#0067cd")
@@ -554,7 +555,8 @@ function importImgSVG(data) {
     
     d3.select("#shapes")
     .append("xhtml:body")
-    .html(imgSVG['activeElement']['outerHTML']);  
+    .html(imgSVG['activeElement']['outerHTML'])
+    .style("display", "inline");  
     
     d3.select("#shapes body svg")
         .style("fill", newColor);
