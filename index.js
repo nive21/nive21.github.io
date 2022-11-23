@@ -1513,7 +1513,9 @@ function handleClick(radio){
 //Code credits: https://codepen.io/eleviven/pen/eYmwzLp
 
 let onlongtouch = false;
+let showToolTip = false;
 let timer = false;
+let timer2 = false;
 
 function touchStart(){
   if (!timer) {
@@ -1537,10 +1539,29 @@ onlongtouch = function(){
         attrSortOder = 0;
     }
     updateXAttribute(attribute);
-
 }
+
+// function touchStartTip(){
+//     if (!timer2) {
+//       timer2 = setTimeout(showToolTip, 800);
+//     }
+//   }
+  
+// function touchEndTip(){
+//     if (timer2) {
+//       clearTimeout(timer2)
+//       timer2 = false;
+//     }
+// }
+
+// showToolTip = function(){
+//     d3.select("#side-panel").style("background-color", "black");    
+// }
 
 document.addEventListener("DOMContentLoaded", function(){
   document.querySelector("#chart").addEventListener("touchstart", touchStart);
   document.querySelector("#chart").addEventListener("touchend", touchEnd);
+
+//   document.querySelector("path").addEventListener("touchstart", touchStartTip);
+//   document.querySelector("path").addEventListener("touchend", touchEndTip);
 })
