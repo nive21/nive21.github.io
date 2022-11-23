@@ -26,6 +26,7 @@ let dataset = [];
 let columns = [];
 
 let isNumericScale = false;
+let prevRadio = null;
 
 // Holds the current data displayed in the chart
 let currentData = [];
@@ -53,14 +54,13 @@ let onePointerTappedTwice = false;
 let twoPointersTappedTwice = false;
 
 // user preferences
-let useCustomIcons = false;
+let useCustomIcons = true;
 let iconSize = 2 * circleRadius; //default
 let unitVisHtMargin = iconSize;
 let unitVisPadding = 1.5;
 let imgSVGs = [];
 let attrSortOder = 0; // 0: ascending, 1: descending
 let currSize = 20;
-let prevRadio = null;
 
 let array = [d3.csv('dataset/candy-data.csv'), d3.xml('images/candy.svg')]
 Promise.all(array).then(function (data1) {
@@ -115,7 +115,7 @@ Promise.all(array).then(function (data1) {
     //attribute = 'winPercent';
     //attribute = 'pricePercent';
     setNumericScale();
-    // groupByAttribute(currentData, attribute);
+    groupByAttribute(currentData, attribute);
 
 
     // Niv
@@ -128,12 +128,12 @@ Promise.all(array).then(function (data1) {
     createAccordion(allData, cols);
     createDropDown(allData, cols);
 
-    visualize(1);
+
 
     //cols = Object.keys(currentData[0].data);
     //visualize(11); //groupByAttribute, create, update
-    // createVisualization();
-    // updateVisualization();
+    createVisualization();
+    updateVisualization();
 
     /* filterData(columns[11], 0, 0.5);
     filterData(columns[11], 0, 0.2); */
@@ -1109,17 +1109,15 @@ function createDropDown(data, cols) {
         .on('pointerdown', function (e, d) {
 
             let index = columns.indexOf(d);
-            // console.log("att", d, index);
+            console.log("att", d, index);
             changeXAxis(index);
 
-            // if (typeof(Object.keys(attrValuesCount)[0]) == "string" || Object.keys(attrValuesCount).length === 2) {
-            if (d == "Candy" ||  Object.keys(attrValuesCount).length === 2) {
-                // console.log("double", Object.keys(attrValuesCount)[0], typeof(Object.keys(attrValuesCount)[0]) )
+            if (d == "Candy" || Object.keys(attrValuesCount).length === 2) {
                 d3.selectAll(".form-check").style("display", "block");
             } else {
-                // console.log("cont", Object.keys(attrValuesCount))
                 d3.selectAll(".form-check").style("display", "none");
             }
+
         });
 
     d3.select("#dropdown-menu3")
@@ -1276,20 +1274,21 @@ function changeColor(newColor) {
     // lasso selection can be [], or 0 selections as an object
     if (selection.length !== 0 && selection.data().length !== 0) {
         if (useCustomIcons) {
-            selection.data().forEach(d => {
-                //curDataAttrs[id].imgSvgId = 0; // pass in the newly added svg here -- store svgs?
-                curDataAttrs[d.id].color = newColor;
-            });
             selection.selectAll('svg').style('fill', newColor);
-        } else {
-            d3.selectAll(selection).style('fill', newColor);
-        }
+        } else d3.selectAll(selection).style('fill', newColor);
+        selection.data().forEach(d => {
+            //curDataAttrs[id].imgSvgId = 0; // pass in the newly added svg here -- store svgs?
+            curDataAttrs[d.id].color = newColor;
+        });
     } else {
         // applied to all data points
         if (useCustomIcons)
             d3.selectAll('.unit svg').style('fill', newColor);
         else d3.selectAll('.unit').style('fill', newColor);
         currentFtrs.color = newColor;
+        Object.values(curDataAttrs).forEach(d => {
+            d.color = newColor;
+        });
     }
     d3.selectAll("#shapes svg path").style('fill', newColor);
     //deselectPoints();
@@ -1305,10 +1304,10 @@ function changeSize(newSize) {
             });
             selection.selectAll('svg').attr('height', newSize).attr('width', newSize);
         } else {
-            if (useCustomIcons) unitVisHtMargin = newSize*6;
+            if (useCustomIcons) unitVisHtMargin = newSize * 6;
             d3.selectAll(selection).attr('d', function (d) {
-                curDataAttrs[d.id].size = newSize*6;
-                return all_shapes[curDataAttrs[d.id].shapeId].size(newSize*6)();
+                curDataAttrs[d.id].size = newSize * 6;
+                return all_shapes[curDataAttrs[d.id].shapeId].size(newSize * 6)();
             });
         }
     } // all data points
@@ -1317,16 +1316,15 @@ function changeSize(newSize) {
             if (useCustomIcons) unitVisHtMargin = newSize;
             d3.selectAll('.unit svg').attr('height', newSize).attr('width', newSize);
         } else {
-            if (useCustomIcons) unitVisHtMargin = newSize*6;
+            if (useCustomIcons) unitVisHtMargin = newSize * 6;
             currentFtrs.size = newSize * 6;
             d3.selectAll('.unit').attr('d', function (d) {
-                curDataAttrs[d.id].size = currentFtrs.size;
                 return all_shapes[curDataAttrs[d.id].shapeId].size(currentFtrs.size)();
-            });
+            }).attr('fill', d => curDataAttrs[d.id].color);;
         }
     }
     if (useCustomIcons)
-        unitVisPadding = newSize*0.07; 
+        unitVisPadding = newSize * 0.07;
     updateVisualization();
     //deselectPoints();
 }
@@ -1366,7 +1364,6 @@ function changeXAxis(index) {
 
     isNumericScale = false;
 
-
     d3.selectAll(".unit").remove();
     d3.select('.unit svg').remove();
     visualize(index);
@@ -1375,7 +1372,7 @@ function changeXAxis(index) {
 function visualize(colindex) {
     attribute = columns[colindex];
     //currentData = groupByAttribute(dataset, attribute);
-    currentData = groupByAttribute(currentData, attribute);
+    currentData = groupByAttribute(dataset, attribute);
     createVisualization();
     updateVisualization();
 }
@@ -1448,6 +1445,12 @@ function filterAxis(colName) {
         from: min,
         to: max,
         step: Math.round((max - min) * 10) / 100,
+        // onStart: function(data) {
+        //     console.log("onStart");
+        // },
+        // onChange: function(data) {
+        //     console.log("onChange");
+        // },
         onFinish: function (data) {
             // console.log("onFinish", data);
             // console.log(data['from'], data['to'])
