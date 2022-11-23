@@ -149,7 +149,7 @@ html, body{
     fill: #EC888C;
 }
 
-.selected {
+.selected, .singleHL {
     stroke: black;
     stroke-width: 2px;
 }
