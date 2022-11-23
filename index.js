@@ -67,12 +67,15 @@ Promise.all(array).then(function (data1) {
 
     let imgSVG = data1[1];
     let svgNode = imgSVG.getElementsByTagName("svg")[0];
+
     d3.select(svgNode)
         .attr('height', 18)
         .attr('width', 18)
         .style('fill', 'brown');
     iconSize = 20;
     imgSVGs.push(svgNode);
+
+    // console.log('above imgSVG', imgSVGs, imgSVG, svgNode);
 
     let data = data1;
     data[0].forEach(d => {
@@ -105,6 +108,12 @@ Promise.all(array).then(function (data1) {
             })
     }
 
+    d3.select("#shapes")
+    .append("xhtml:body")
+    .html(imgSVG['activeElement']['outerHTML']);
+
+    d3.select("#shapes body svg")
+        .style("fill", "#0067cd")
 
     // CHANGE LATER?: initially, use chocolate as an attribute to group on
     //attribute = 'fruity';
@@ -533,15 +542,23 @@ function readFile(e) {
 function importImgSVG(data) {
     let parser = new DOMParser();
     let imgSVG = parser.parseFromString(data, "image/svg+xml");
-
-
     let svgNode = imgSVG.getElementsByTagName("svg")[0];
+
     d3.select(svgNode)
         .attr('height', 18)
         .attr('width', 18)
         .style('fill', 'plum');
     imgSVGs.push(svgNode);
-    console.log('imgSVG', imgSVGs);
+
+    console.log('below imgSVG', imgSVGs, imgSVG, svgNode); 
+    
+    d3.select("#shapes")
+    .append("xhtml:body")
+    .html(imgSVG['activeElement']['outerHTML']);  
+    
+    d3.select("#shapes body svg")
+        .style("fill", newColor);
+    
 }
 
 function filterData(attr, lowValue, highValue) {
