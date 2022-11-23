@@ -38,7 +38,8 @@ let circleRadius = 7;
 let unitRadius = 7;
 let attrValuesCount; // keeps count of values in the grouped attribute
 let sortedAxisLabels; // keeps sorted order of atrributes on x axis
-
+//let currentFtrs = { color: '#0067cd', shape: circleShape.size(200), imgSvgId: 0, size: 20 }; // attributes applied to all data points
+let currentFtrs = { color: '#0067cd', shapeId: 2, imgSvgId: 0, size: 20 }; // attributes applied to all data points
 // selections
 let selection = []; // all selected unit vis
 
@@ -52,9 +53,10 @@ let onePointerTappedTwice = false;
 let twoPointersTappedTwice = false;
 
 // user preferences
-let useCustomIcons = true;
+let useCustomIcons = false;
 let iconSize = 2 * circleRadius; //default
 let unitVisHtMargin = iconSize;
+let unitVisPadding = 1.5;
 let imgSVGs = [];
 let attrSortOder = 0; // 0: ascending, 1: descending
 let currSize = 20;
@@ -126,10 +128,10 @@ Promise.all(array).then(function (data1) {
     createAccordion(allData, cols);
     createDropDown(allData, cols);
 
-
+    visualize(1);
 
     //cols = Object.keys(currentData[0].data);
-    visualize(1); //groupByAttribute, create, update
+    //visualize(11); //groupByAttribute, create, update
     // createVisualization();
     // updateVisualization();
 
@@ -178,7 +180,6 @@ Promise.all(array).then(function (data1) {
         .append("xhtml:body")
         .attr("id", "selection-text")
         .html("<br>Lasso-select datapoints to view stats.<br>")
-
 });
 
 function createVisualization() {
@@ -214,6 +215,12 @@ function createVisualization() {
         .attr('y', 0)
         .attr('width', width + 20)
         .attr('height', height);
+
+
+    // Enable Lasso selection for unit visualization -- for the svg and the units within it
+    lasso.targetArea(d3.select('#lasso-selectable-area'))
+        .items(d3.selectAll('#chart-content .unit'));
+    d3.select("#chart").call(lasso).call(chartZoom);
 }
 
 function updateVisualization() {
@@ -222,7 +229,7 @@ function updateVisualization() {
     } catch (err) {
         console.log(err);
     } */
-    let unitVisPadding = 1.5; //pixels
+    //unitVisPadding = 1.5; //pixels
     setNumericScale();
 
     //let unitSize = d3.max(Object.values(curDataAttrs), d => d.size);
@@ -237,18 +244,11 @@ function updateVisualization() {
         xScale = d3.scaleBand();
 
         // determine order of columns
-        if (attrSortOder == 0){
-            // console.log("asc");
+        if (attrSortOder == 0)
             sortedAxisLabels.sort((a, b) => a.attrName.localeCompare(b.attrName));
-        }            
-        else {
-            // console.log(attrSortOder, "desc");
-            sortedAxisLabels.sort((a, b) => b.attrName.localeCompare(a.attrName));
-        }
+        else sortedAxisLabels.sort((a, b) => b.attrName.localeCompare(a.attrName));
 
         //xScale.domain(Object.keys(attrValuesCount)).range([0, width]).paddingInner(.7).paddingOuter(0.7); // takes string as input
-        // xScale.domain(sortedAxisLabels.map(d => d.attrValue)).range([0, width]).paddingInner(.7).paddingOuter(0.7); // takes string as input
-
         xScale.domain(sortedAxisLabels.map(d => d.attrValue)).range([0, width]).paddingInner(.7).paddingOuter(0.7); // takes string as input
 
         // set number of elements in each column
@@ -265,7 +265,7 @@ function updateVisualization() {
     unitXScale.domain([0, numRowElements]);
 
     let maxAttributeValueCount = Math.max(...Object.values(attrValuesCount));
-    unitVisHtMargin = iconSize;
+    //unitVisHtMargin = iconSize;
 
     /* if (numRowElements > 1) {
         let yScaleHeight = 2 * circleRadius * (maxAttributeValueCount / numRowElements) * unitVisPadding;
@@ -320,13 +320,9 @@ function updateVisualization() {
         .attr("x", width / 2)
         .attr("y", margin.top + margin.bottom - 40)
         .attr("text-anchor", "middle")
-        .attr("font-size", "1.2em")
-    //.style("fill", 'dimgrey');
+        .attr("font-size", "1.2em");
 
-    // Enable Lasso selection for unit visualization -- for the svg and the units within it
-    lasso.targetArea(d3.select('#lasso-selectable-area'))
-        .items(d3.selectAll('#chart-content .unit'));
-    d3.select("#chart").call(lasso).call(chartZoom);
+    lasso.items(d3.selectAll('#chart-content .unit'));
 }
 
 function updateImgSVG() {
@@ -347,13 +343,9 @@ function updateUnitViz(tx = 1, tk = 1) {
             .attr("data-placement", "top")
             .attr("title", (d, i) => d['data']['Candy'])
             .attr("id", (d, i) => `unit-icon-${i}`)
-            //.attr("xlink:href", "https://s27.postimg.org/h3xjrsnrn/dcpolicycenter.png")
-            // .attr("d", function (d) {
-            //     let node = document.importNode('/images/candy.svg', true);
-            //})
-            .attr('transform', d => plotXY(d, tx, tk))
+            .attr('transform', d => plotXY(d, tx, tk));
 
-
+        console.log(svgs.data().length)
 
         /* let svgs = units.enter()
             .append("g") //image
@@ -412,7 +404,7 @@ function updateUnitViz(tx = 1, tk = 1) {
     } else {
         units.join("path")
             .attr("class", "unit")
-            .attr('d', d => curDataAttrs[d.id].shape)
+            .attr('d', d => all_shapes[curDataAttrs[d.id].shapeId]())
             .style('fill', d => curDataAttrs[d.id].color)
             .attr('transform', d => plotXY(d, tx, tk));
 
@@ -556,9 +548,16 @@ function filterData(attr, lowValue, highValue) {
     // remove the selcted elements from current data
     //selection
     // between a range (including)
-    // console.log("inside filterData");
-    let dat = dataset.filter(d => d[attr] >= lowValue && d[attr] <= highValue);
-    setData(dat);
+    curDataAttrs = {};
+    currentData = [];
+    for (let d of allData) {
+        if (d.data[attr] >= lowValue && d.data[attr] <= highValue) {
+            currentData.push(d);
+            curDataAttrs[d.id] = { color: currentFtrs.color, shape: currentFtrs.shapeId, imgSvgId: currentFtrs.imgSvgId, size: currentFtrs.size };
+            console.log(curDataAttrs[d.id])
+        }
+    }
+    d3.selectAll(".unit").remove();
     groupByAttribute(currentData, attribute);
     updateVisualization();
 }
@@ -628,11 +627,7 @@ function setData(d) {
         //dataset.push({ id: i, data: dataPt, attrs: { color: '#0067cd', shape: circleShape(), imgSvgId: 0 } });
         //dataset.push({ id: i, data: dataPt });
         currentData.push({ id: i, data: dataPt });
-        // console.log(d3.select(circleShape));
-        // console.log(d3.select(circleShape).data());
-        // console.log(circleShape.size(220));
-        // console.log(circleShape.size(31));
-        curDataAttrs[i] = { color: '#0067cd', shape: circleShape(), imgSvgId: 0 };
+        curDataAttrs[i] = { color: '#0067cd', shapeId: 2, imgSvgId: 0, size: 20 };
         i++;
     }
     return currentData;
@@ -706,7 +701,6 @@ function doubleTapHandler(ev) {
     // detect pointer double taps on chart region
     detectOnePointerDoubleTap();
     detectTwoPointersDoubleTap();
-
     detectMultiplePointersOnScreen();
 }
 
@@ -721,9 +715,9 @@ function detectOnePointerDoubleTap() {
     // action to do on double tap
     if (onePointerTappedTwice && evCacheContent.length === 1 && !twoPointersTappedTwice) {
         // select all unit vis on single pointer double tap
-        selection = d3.selectAll('#chart-content .unit')
-            .classed("selected", true)
-            .attr('r', circleRadius); // reset radius of unselected points;
+        // selection = d3.selectAll('#chart-content .unit')
+        //     .classed("selected", true)
+        //     .attr('r', circleRadius); // reset radius of unselected points;
 
         //selection.classed("selected", true);
         // selection.notSelectedItems()
@@ -1046,7 +1040,6 @@ function tabulate(data, cols) {
     var head = table.append("thead")
     var body = table.append("tbody")
 
-    console.log("columns", cols);
     head.append("tr")
         .selectAll("th")
         .data(cols)
@@ -1139,6 +1132,7 @@ function createDropDown(data, cols) {
         .text((d) => (d[0].toUpperCase() + d.slice(1)))
         .on('pointerdown', function (e, d) {
             console.log("att", d);
+            // changeXAxis(d);
         });
 
     d3.select("#dropdown-menu4")
@@ -1154,6 +1148,7 @@ function createDropDown(data, cols) {
         .text((d) => (d[0].toUpperCase() + d.slice(1)))
         .on('pointerdown', function (e, d) {
             console.log("att", d);
+            // changeXAxis(d);
         });
 
     d3.select("#dropdown-menu5")
@@ -1184,7 +1179,7 @@ function createDropDown(data, cols) {
         .attr("aria-disabled", (d, i) => { if (col_types[i] == "string") { return "true"; } })
         .text((d) => (d[0].toUpperCase() + d.slice(1)))
         .on('pointerdown', function (e, d) {
-            // console.log("filter", d);
+            console.log("filter", d);
             filterAxis(d);
         });
 
@@ -1277,6 +1272,7 @@ function changeSizeByCol(colname, min, max) {
 }
 
 function changeColor(newColor) {
+    //console.log(selection.data());
     // lasso selection can be [], or 0 selections as an object
     if (selection.length !== 0 && selection.data().length !== 0) {
         if (useCustomIcons) {
@@ -1285,30 +1281,79 @@ function changeColor(newColor) {
                 curDataAttrs[d.id].color = newColor;
             });
             selection.selectAll('svg').style('fill', newColor);
-        } else d3.selectAll(selection).style('fill', newColor);
-
-    } else d3.selectAll('.unit svg').style('fill', newColor);
+        } else {
+            d3.selectAll(selection).style('fill', newColor);
+        }
+    } else {
+        // applied to all data points
+        if (useCustomIcons)
+            d3.selectAll('.unit svg').style('fill', newColor);
+        else d3.selectAll('.unit').style('fill', newColor);
+        currentFtrs.color = newColor;
+    }
     d3.selectAll("#shapes svg path").style('fill', newColor);
-    deselectPoints();
+    //deselectPoints();
 }
 
 function changeSize(newSize) {
+    // lasso selected points
     if (selection.length !== 0 && selection.data().length !== 0) {
-        if (useCustomIcons) selection.selectAll('svg').attr('height', newSize).attr('width', newSize);
-        else {
-            d3.selectAll(selection).attr('height', newSize).attr('width', newSize);
+        if (useCustomIcons) {
+            if (useCustomIcons) unitVisHtMargin = newSize;
+            selection.data().forEach(d => {
+                curDataAttrs[d.id].size = newSize;
+            });
+            selection.selectAll('svg').attr('height', newSize).attr('width', newSize);
+        } else {
+            if (useCustomIcons) unitVisHtMargin = newSize*6;
+            d3.selectAll(selection).attr('d', function (d) {
+                curDataAttrs[d.id].size = newSize*6;
+                return all_shapes[curDataAttrs[d.id].shapeId].size(newSize*6)();
+            });
         }
-    } else {
-        if (useCustomIcons)
+    } // all data points
+    else {
+        if (useCustomIcons) {
+            if (useCustomIcons) unitVisHtMargin = newSize;
             d3.selectAll('.unit svg').attr('height', newSize).attr('width', newSize);
-        else {
-            for (let i = 0; i < currentData.length; i++) {
-                let name = "#unit-icon-" + i + " svg";
-                d3.select(name).attr('width', newSize).attr('height', newSize);
-            }
+        } else {
+            if (useCustomIcons) unitVisHtMargin = newSize*6;
+            currentFtrs.size = newSize * 6;
+            d3.selectAll('.unit').attr('d', function (d) {
+                curDataAttrs[d.id].size = currentFtrs.size;
+                return all_shapes[curDataAttrs[d.id].shapeId].size(currentFtrs.size)();
+            });
         }
     }
-    deselectPoints();
+    if (useCustomIcons)
+        unitVisPadding = newSize*0.07; 
+    updateVisualization();
+    //deselectPoints();
+}
+
+function changeShape() {
+    currentFtrs.shape = shape;
+    if (!useCustomIcons)
+        unitVisPadding = iconSize;
+    //shape
+    // lasso selection
+    // if (selection.length !== 0 && selection.data().length !== 0) {
+    //     d3.selectAll(selection).attr('d', function(d) {
+    //         curDataAttrs[d.id].shape = shape;
+    //         return shape;
+    //     });
+    // } // all data points
+    // else {
+    //     d3.selectAll('.unit').attr('d', function(d) {
+    //         curDataAttrs[d.id].shape = shape;
+    //         return shape;
+    //     });
+    // }
+
+
+    //console.log(curDataAttrs[selection.data()[0].id].shape.size(200));
+    //console.log(curDataAttrs[d.id].shape.size(200));
+    //d3.selectAll(".unit path").attr('d', d => curDataAttrs[d.id].shape);
 }
 
 function changeXAxis(index) {
@@ -1320,6 +1365,7 @@ function changeXAxis(index) {
         .text(columns[index]);
 
     isNumericScale = false;
+
 
     d3.selectAll(".unit").remove();
     d3.select('.unit svg').remove();
@@ -1335,15 +1381,19 @@ function visualize(colindex) {
 }
 
 function findShape(shape) {
-    console.log("shape", shape, shape.slice(6));
+    // console.log("shape", shape, shape.slice(6));
+    // console.log(d3.select(".unit svg path"));
 
-    d3.selectAll(".unit svg path").remove();
-    d3.selectAll(".unit svg").attr("xmlns", null).attr("d", null)
-    d3.selectAll(".unit svg")
-        .attr("width", currSize).attr("height", currSize)
-        .append("path").attr("d", all_shapes[shape.slice(6)])
-        .attr("transform", "scale(8) translate(10, 10)")
-    // .attr("transform", "translate(25, 25)")
+    // changing from user svg to d3 shape
+    if (!d3.select(".unit svg path").empty()) {
+        d3.selectAll(".unit svg path").remove();
+        d3.selectAll(".unit svg").attr("xmlns", null).attr("d", null);
+        d3.selectAll(".unit svg")
+            .attr("width", currSize).attr("height", currSize)
+            .append("path").attr("d", all_shapes[shape.slice(6)])
+            .attr("transform", "scale(8) translate(10, 10)");
+    }
+    // changing from d3 shape to user svg
 }
 
 function sortAxis(colName) {
@@ -1398,7 +1448,7 @@ function filterAxis(colName) {
         from: min,
         to: max,
         step: Math.round((max - min) * 10) / 100,
-        onFinish: function(data) {
+        onFinish: function (data) {
             // console.log("onFinish", data);
             // console.log(data['from'], data['to'])
             filterData(colName, data['from'], data['to'])
@@ -1503,6 +1553,7 @@ function changeTab() {
         .classed("active", true)
         .classed("show", true)
 }
+
 
 function handleClick(radio){
     
