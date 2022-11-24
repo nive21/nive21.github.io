@@ -1336,6 +1336,8 @@ function updateShapes(selection, shape, shapeId) {
             //d3.select(`#unit-icon-${id}`).classed("selected", false);
             // d3.select(`#unit-icon-${id}`).remove();
 
+            d3.select(`#unit-icon-${id} g`).remove();
+            d3.select(`#unit-icon-${id} path`).remove();
             let s = imgSVGs[shapeId - numInitialShapes];
 
             d3.select(s).attr('id', `unit-${id}`).style('fill', curDataAttrs[id].color);
