@@ -1283,7 +1283,7 @@ function updateSize(selection, newSize) {
         let id = d3.select(elm).attr('id').split('-').at(-1);
         if (!d3.select(`#unit-icon-${id}`).select('svg').empty())
             d3.select(`#unit-icon-${id}`).select('svg').attr('height', newSize).attr('width', newSize);
-        else d3.select(`#unit-icon-${id}`).attr('d', all_shapes[curDataAttrs[id].shapeId].size(newSize * 6)());
+        else d3.select(`#unit-icon-${id} path`).attr('d', all_shapes[curDataAttrs[id].shapeId].size(newSize * 6)());
         curDataAttrs[id].size = newSize;
     }
 }
