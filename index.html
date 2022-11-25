@@ -160,13 +160,13 @@
                                                 </ul>
 
                                                 <div class="form-check">
-                                                    <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" value = "0" onclick="handleClick(this);" checked>
+                                                    <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" value = "0" onclick="orderXAxis(this);" checked>
                                                         <label class="form-check-label" for="flexRadioDefault1">
                                                             Given order
                                                         </label>
                                                 </div>
                                                 <div class="form-check">
-                                                    <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" value = "1" onclick="handleClick(this);">
+                                                    <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" value = "1" onclick="orderXAxis(this);">
                                                         <label class="form-check-label" for="flexRadioDefault2">
                                                             Reverse order
                                                         </label>
@@ -251,12 +251,12 @@
                             <div class="tab-pane fade" id = "pill-details" role="tabpanel" aria-labelledby="pill-details-tab">     
 
                                 <h3>Aggregate data</h3> 
-                                <div class="scrollable-content">  
+				<div class="scrollable-content">  
                                 <ul class="list-group list-group-light">
                                     <li class="list-group-item" id = "selection">
                                     </li>
                                 </ul>
-                                </div>
+				</div>
                             </div>
                         </div>
                     </div>
@@ -265,7 +265,7 @@
             <div id='main-panel' class='col-8 col'>   
                 <svg id="chart">
                     <g id='lasso-selectable-area'>
-                        <rect id = "whiteSpace"></rect>
+                        <rect></rect>
                         <g id="chart-content">
                             <g class='unit-vis'></g>
                         </g>
