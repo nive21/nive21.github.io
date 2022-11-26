@@ -25,6 +25,7 @@ Shapes: https://www.geeksforgeeks.org/d3-js-symboltriangle-symbol/, https://stac
 Slider: http://ionden.com/a/plugins/ion.rangeSlider/start.html
 Icons: https://www.tutorialrepublic.com/twitter-bootstrap-tutorial/bootstrap-icons.php, https://icons.getbootstrap.com/
 Radio buttons: https://getbootstrap.com/docs/5.0/forms/checks-radios/
+Pinch to zoom: https://danburzo.ro/dom-gestures/
 
 
 Debugging references:
