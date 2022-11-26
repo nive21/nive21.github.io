@@ -14,6 +14,8 @@ let tooltipTriggerList;
 let col_values;
 let col_types;
 let filtering = false;
+let newSize;
+let change;
 
 let tip;
 
@@ -176,6 +178,8 @@ Promise.all(array).then(function (data1) {
         // console.log(e.target.value);
         currSize = e.target.value;
         changeSize(e.target.value);
+
+        console.log(currSize);
     }
 
     d3.select("#dropdownMenuButton1")
@@ -759,6 +763,7 @@ function resetZoom() {
         d3.zoomIdentity,
         d3.zoomTransform(chart.node()).invert([width / 2, height / 2])
     );
+    
 }
 
 function setNumericScale() {
@@ -793,7 +798,7 @@ function startFingerSwipe(ev) {
             const evCache = getCache(ev);
             const index = evCache.findIndex((cachedEv) => cachedEv.pointerId === ev.pointerId);
             evCache[index] = ev;
-            console.log("two swipe started", ev, evCache[0], evCache[1]);
+            // console.log("two swipe started", ev, evCache[0], evCache[1]);
             prevPotrLoc = [{ x: evCache[0].clientX, y: evCache[0].clientY }, { x: evCache[1].clientX, y: evCache[1].clientY }];
             // console.log(prevPotrLoc);
             // prevDiff = -1;
@@ -865,6 +870,8 @@ function fingerSwipe(ev){
             }
     
             let curDiff = -1;
+        
+
             // var x = ev.clientX;
             // var y = ev.clientY;
             // var xDiff = prevPotrLoc[index].x - x;
@@ -873,19 +880,27 @@ function fingerSwipe(ev){
             let x = evCache[1].clientX - evCache[0].clientX;
             let y = evCache[1].clientY - evCache[0].clientY;
             curDiff = Math.sqrt(x * x + y * y);
-            let change;
+            console.log("currsize", typeof(parseFloat(currSize)), parseFloat(currSize))
+
+            if(prevDiff > 0){
+
+                newSize = parseFloat(currSize) + (curDiff - prevDiff)/10;
+                console.log(newSize, parseFloat(currSize), prevDiff);
+        
+                if (newSize > 10 && newSize < 40) {
+                    currSize = newSize;
     
-            if (prevDiff > 0 && currSize > 15) {
-                if (curDiff > prevDiff) {
-                    change = "inc size ";
+                    if (curDiff > prevDiff) {
+                        change = "inc size ";
+                    }
+                    if (curDiff < prevDiff) {
+                        change = "reduce size ";
+                    }                
+                    
+                    console.log(change, parseFloat(currSize), curDiff, prevDiff);
+                    changeSize(parseFloat(currSize))
                 }
-                if (curDiff < prevDiff) {
-                    change = "reduce size ";
-                }
-                
-                currSize += (curDiff - prevDiff);
-                console.log(change, currSize, curDiff, prevDiff);
-                changeSize(currSize)
+
             }
 
             prevDiff = curDiff;
