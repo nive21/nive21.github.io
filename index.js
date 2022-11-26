@@ -634,7 +634,9 @@ function pointerdownHandler(ev) {
     // check if this is a double tap
     doubleTapHandler(ev);
     // swipe left/right handler
-    startTwoFingerSwipe(ev);
+    startFingerSwipe(ev);
+    
+    // console.log("inside pointerdown handler")
 }
 
 function doubleTapHandler(ev) {
@@ -646,6 +648,8 @@ function doubleTapHandler(ev) {
     detectOnePointerDoubleTap();
     detectTwoPointersDoubleTap();
     detectMultiplePointersOnScreen();
+    prevDiff = -1;
+    console.log("inside doubetap handler")
 }
 
 function detectOnePointerDoubleTap() {
@@ -764,7 +768,7 @@ function setNumericScale() {
 }
 
 var prevPotrLoc = undefined; // pointer 0
-function startTwoFingerSwipe(ev) {
+function startFingerSwipe(ev) {
     if (evCacheContent.length === 3){
 
         if (prevPotrLoc === undefined || prevPotrLoc.length==2) {
@@ -789,9 +793,10 @@ function startTwoFingerSwipe(ev) {
             const evCache = getCache(ev);
             const index = evCache.findIndex((cachedEv) => cachedEv.pointerId === ev.pointerId);
             evCache[index] = ev;
-            // console.log("two swipe started", ev, evCache[0], evCache[1]);
+            console.log("two swipe started", ev, evCache[0], evCache[1]);
             prevPotrLoc = [{ x: evCache[0].clientX, y: evCache[0].clientY }, { x: evCache[1].clientX, y: evCache[1].clientY }];
             // console.log(prevPotrLoc);
+            // prevDiff = -1;
 
         }
         // console.log("two!", evCacheContent);
@@ -868,21 +873,23 @@ function fingerSwipe(ev){
             let x = evCache[1].clientX - evCache[0].clientX;
             let y = evCache[1].clientY - evCache[0].clientY;
             curDiff = Math.sqrt(x * x + y * y);
-            console.log("curdiff prevdiff", curDiff, prevDiff);
-            
+            let change;
     
-            if (prevDiff > 0) {
+            if (prevDiff > 0 && currSize > 15) {
                 if (curDiff > prevDiff) {
-                    console.log("inc size")
+                    change = "inc size ";
                 }
                 if (curDiff < prevDiff) {
-                    console.log("reduce size")
+                    change = "reduce size ";
                 }
+                
+                currSize += (curDiff - prevDiff);
+                console.log(change, currSize, curDiff, prevDiff);
+                changeSize(currSize)
             }
 
             prevDiff = curDiff;
 
-            
             /* reset values */
             // prevPotrLoc = undefined;
         }
