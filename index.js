@@ -772,14 +772,14 @@ function startTwoFingerSwipe(ev) {
             const evCache = getCache(ev);
             const index = evCache.findIndex((cachedEv) => cachedEv.pointerId === ev.pointerId);
             evCache[index] = ev;
-            console.log("three swipe started", ev, evCache[0], evCache[1], evCache[2]);
+            // console.log("three swipe started", ev, evCache[0], evCache[1], evCache[2]);
             prevPotrLoc = [{ x: evCache[0].clientX, y: evCache[0].clientY }, { x: evCache[1].clientX, y: evCache[1].clientY }, { x: evCache[2].clientX, y: evCache[2].clientY }];
-            console.log(prevPotrLoc);
+            // console.log(prevPotrLoc);
         }
 
         // ev.preventDefault();
-        console.log("three!", evCacheContent);
-        fingerSwipe();
+        // console.log("three!", evCacheContent);
+        // fingerSwipe();
 
     } 
     else if (evCacheContent.length === 2){
@@ -789,12 +789,12 @@ function startTwoFingerSwipe(ev) {
             const evCache = getCache(ev);
             const index = evCache.findIndex((cachedEv) => cachedEv.pointerId === ev.pointerId);
             evCache[index] = ev;
-            console.log("two swipe started", ev, evCache[0], evCache[1]);
+            // console.log("two swipe started", ev, evCache[0], evCache[1]);
             prevPotrLoc = [{ x: evCache[0].clientX, y: evCache[0].clientY }, { x: evCache[1].clientX, y: evCache[1].clientY }];
-            console.log(prevPotrLoc);
+            // console.log(prevPotrLoc);
 
         }
-        console.log("two!", evCacheContent);
+        // console.log("two!", evCacheContent);
         // twoFingerSwipe();
 
     }
@@ -822,7 +822,7 @@ function fingerSwipe(ev){
             }
             // var x = ev.clientX;
             // var y = ev.clientY;
-            console.log("swipe ended", prevPotrLoc, ev.clientX, ev.clientY)
+            // console.log("swipe ended", prevPotrLoc, ev.clientX, ev.clientY)
             var xDiff = prevPotrLoc[0].x - ev.clientX;
             var yDiff = prevPotrLoc[0].y - ev.clientY;
     
@@ -889,93 +889,93 @@ function fingerSwipe(ev){
     }
 }
 
-function threeFingerSwipe(ev) {
+// function threeFingerSwipe(ev) {
 
-    console.log("inside three!")
-    console.log("cache", evCacheContent.length);
+//     console.log("inside three!")
+//     console.log("cache", evCacheContent.length);
 
 
-    const evCache = getCache(ev);
-    // console.log("getcache", ev, evCache[0], evCache[1], evCache[2]);
-    if (ev != undefined && evCache && evCache.length === 3) {
-        // console.log("inside three!!")
-        const index = evCache.findIndex((cachedEv) => cachedEv.pointerId === ev.pointerId);
-        evCache[index] = ev;
-        // console.log("swipe ended", ev, evCache[0], evCache[1], evCache[2]);
+//     const evCache = getCache(ev);
+//     // console.log("getcache", ev, evCache[0], evCache[1], evCache[2]);
+//     if (ev != undefined && evCache && evCache.length === 3) {
+//         // console.log("inside three!!")
+//         const index = evCache.findIndex((cachedEv) => cachedEv.pointerId === ev.pointerId);
+//         evCache[index] = ev;
+//         // console.log("swipe ended", ev, evCache[0], evCache[1], evCache[2]);
 
-        // If two pointers are down and the distance between each pointer move is positive/negative along an axis, determine swipe direction
-        // Calculate the distance between the previous pointer location and current
-        if (prevPotrLoc === undefined) {
-            return;
-        }
-        // var x = ev.clientX;
-        // var y = ev.clientY;
-        console.log("swipe ended", prevPotrLoc, ev.clientX, ev.clientY)
-        var xDiff = prevPotrLoc[0].x - ev.clientX;
-        var yDiff = prevPotrLoc[0].y - ev.clientY;
+//         // If two pointers are down and the distance between each pointer move is positive/negative along an axis, determine swipe direction
+//         // Calculate the distance between the previous pointer location and current
+//         if (prevPotrLoc === undefined) {
+//             return;
+//         }
+//         // var x = ev.clientX;
+//         // var y = ev.clientY;
+//         console.log("swipe ended", prevPotrLoc, ev.clientX, ev.clientY)
+//         var xDiff = prevPotrLoc[0].x - ev.clientX;
+//         var yDiff = prevPotrLoc[0].y - ev.clientY;
 
-        if (Math.abs(xDiff) > Math.abs(yDiff)) {
-            // console.log("inside three!!!")
-            if (xDiff > 0) {
-                /* right swipe: undo */
-                console.log('swipe left')
-                redoAction();
-            } else if (xDiff < 0) {
-                /* left swipe: redo */
-                console.log('swipe right');
-                undoAction();
-            }
-        }
+//         if (Math.abs(xDiff) > Math.abs(yDiff)) {
+//             // console.log("inside three!!!")
+//             if (xDiff > 0) {
+//                 /* right swipe: undo */
+//                 console.log('swipe left')
+//                 redoAction();
+//             } else if (xDiff < 0) {
+//                 /* left swipe: redo */
+//                 console.log('swipe right');
+//                 undoAction();
+//             }
+//         }
 
-        /* reset values */
-        prevPotrLoc = undefined;
-    }
-}
+//         /* reset values */
+//         prevPotrLoc = undefined;
+//     }
+// }
 
-function twoFingerSwipe(ev) {
-    console.log("inside two!");
-    const evCache = getCache(ev);
-    // console.log("getcache", ev, evCache[0], evCache[1]);
-    if (ev !== undefined && evCache && evCache.length === 2) {
-        console.log("inside two!!");
-        const index = evCache.findIndex((cachedEv) => cachedEv.pointerId === ev.pointerId);
-        evCache[index] = ev;
-        // console.log("swipe ended", evCache[0], evCache[1]);
+// function twoFingerSwipe(ev) {
+//     console.log("inside two!");
+//     const evCache = getCache(ev);
+//     // console.log("getcache", ev, evCache[0], evCache[1]);
+//     if (ev !== undefined && evCache && evCache.length === 2) {
+//         console.log("inside two!!");
+//         const index = evCache.findIndex((cachedEv) => cachedEv.pointerId === ev.pointerId);
+//         evCache[index] = ev;
+//         // console.log("swipe ended", evCache[0], evCache[1]);
 
-        // If two pointers are down and the distance between each pointer move is positive/negative along an axis, determine swipe direction
-        // Calculate the distance between the previous pointer location and current
-        if (prevPotrLoc === undefined) {
-            return;
-        }
+//         // If two pointers are down and the distance between each pointer move is positive/negative along an axis, determine swipe direction
+//         // Calculate the distance between the previous pointer location and current
+//         if (prevPotrLoc === undefined) {
+//             return;
+//         }
 
-        // let curDiff = -1;
-        var x = ev.clientX;
-        var y = ev.clientY;
-        var xDiff = prevPotrLoc[index].x - x;
-        var yDiff = prevPotrLoc[index].y - y;
+//         // let curDiff = -1;
+//         var x = ev.clientX;
+//         var y = ev.clientY;
+//         var xDiff = prevPotrLoc[index].x - x;
+//         var yDiff = prevPotrLoc[index].y - y;
 
-        // x = evCache[1].clientX - evCache[0].clientX;
-        // y = evCache[1].clientY - evCache[0].clientY;
-        // curDiff = Math.sqrt(x * x + y * y);
-        // console.log("curdiff prevdiff", curDiff, prevDiff);
-        // prevDiff = curDiff;
+//         // x = evCache[1].clientX - evCache[0].clientX;
+//         // y = evCache[1].clientY - evCache[0].clientY;
+//         // curDiff = Math.sqrt(x * x + y * y);
+//         // console.log("curdiff prevdiff", curDiff, prevDiff);
+//         // prevDiff = curDiff;
 
-        if (Math.abs(xDiff) > Math.abs(yDiff)) {
-            console.log("inside two!!!");
-            if (xDiff > 0) {
-                /* right swipe: undo */
-                console.log('zoom out')
-                // redoAction();
-            } else if (xDiff < 0) {
-                /* left swipe: redo */
-                console.log('zoom in');
-                // undoAction();
-            }
-        }
-        /* reset values */
-        prevPotrLoc = undefined;
-    }
-}
+//         if (Math.abs(xDiff) > Math.abs(yDiff)) {
+//             // console.log("inside two!!!");
+//             if (xDiff > 0) {
+//                 /* right swipe: undo */
+//                 console.log('zoom out')
+//                 // redoAction();
+//             } else if (xDiff < 0) {
+//                 /* left swipe: redo */
+//                 console.log('zoom in');
+//                 // undoAction();
+//             }
+//         }
+//         /* reset values */
+//         prevPotrLoc = undefined;
+//     }
+// }
 
 
 // function pinchZoom(ev, direction) {
