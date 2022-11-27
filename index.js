@@ -202,6 +202,8 @@ Promise.all(array).then(function (data1) {
         return new bootstrap.Tooltip(tooltipTriggerEl);
     });
 
+    document.addEventListener("contextmenu", function(event) {event.preventDefault();}, false);
+
     d3.select("#selection")
         .append("xhtml:body")
         .attr("id", "selection-text")
