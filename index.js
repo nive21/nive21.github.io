@@ -523,6 +523,11 @@ function filterData(attr, lowValue, highValue) {
 
     // empty redo stack
     redoStack = [];
+
+    if (colorEncodingAttribute){
+        // console.log("trying to change colors...", colorEncodingAttribute);
+        changeColorByColumn(colorEncodingAttribute);
+    }
 }
 
 function updateXAttribute(attr) {
@@ -1777,6 +1782,10 @@ function changeXAxis(index) {
     groupByAttribute(currentData, attribute);
     updateVisualization();
     if (zoomState !== undefined) zoomed(zoomState.x, zoomState.k);
+    if (colorEncodingAttribute){
+        // console.log("trying to change colors...", colorEncodingAttribute);
+        changeColorByColumn(colorEncodingAttribute);
+    }
 }
 
 // function visualize(colindex) {
