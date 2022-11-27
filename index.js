@@ -7,6 +7,7 @@ let unitXScale; // scale for unit vis on x-axis -- reference scale
 let unitYScale; // scale for unit vis on y-axis
 let xAxis;
 let numRowElements;
+let colorXScale;
 
 let attribute = null;
 
@@ -202,7 +203,7 @@ Promise.all(array).then(function (data1) {
         return new bootstrap.Tooltip(tooltipTriggerEl);
     });
 
-    document.addEventListener("contextmenu", function(event) {event.preventDefault();}, false);
+    // document.addEventListener("contextmenu", function(event) {event.preventDefault();}, false);
 
     d3.select("#selection")
         .append("xhtml:body")
@@ -272,8 +273,11 @@ function updateVisualization() {
         });
         // xScale.domain(minMax).range([0, width]); // takes number as input
         // sort
-        if (attrSortOder == 0)
-           xScale.domain(minMax).range([0, width]); // takes number as input
+        if (attrSortOder == 0){
+           xScale.domain(minMax).range([0, width]) // takes number as input
+           
+
+        }
         else xScale.domain(minMax.reverse()).range([0, width]);
     } else { // categorical scale (yes/no)
         xScale = d3.scaleBand();
@@ -1433,7 +1437,7 @@ function getColforSize(colname) {
 }
 
 function changeSizeByCol(colname, min, max) {
-    console.log("data", currentData);
+    // console.log("data", currentData);
 
     d3.select("#dropdownMenuButton5")
         .text(colname);
@@ -1791,6 +1795,45 @@ function sortAxis(colName) {
 
 function changeColorByColumn(colName){
     d3.select("#dropdownMenuButton3").text(colName);
+
+    // for (let d of currentData) {
+        //let name = "#unit-icon-" + i + " svg";
+        // let name = "#unit-icon-" + d.id;
+        //let currsize = currentData[i]['data'][colname];
+        // let currsize = d.data[colname];
+        // let reqsize = (((currsize - min) * (40 - 10)) / (max - min)) + 10;
+
+        //console.log("curr", reqsize);
+        // d3.select(name).attr('width', reqsize).attr('height', reqsize);
+        // updateSize(d3.select(name), parseInt(reqsize))
+    
+        // console.log("color ", colorXScale(d));
+    // }
+
+    // d3.selectAll(".unit-vis").style("fill", (d)=>colorXScale(d))
+    var colors = d3.scaleLinear()
+    // .domain(d3.ticks(0, 50, 11))
+    .range(["#5E4FA2", "#3288BD", "#66C2A5", "#ABDDA4", "#E6F598", "#FFFFBF", "#FEE08B", "#FDAE61", "#F46D43", "#D53E4F", "#9E0142"]);
+
+
+    let minMax = d3.extent(currentData, function (d) {
+        return d.data[attribute];
+    });
+    colorXScale = d3.scaleLinear().domain([0, 100]).range(["white", "blue"]);
+    
+    console.log(colorXScale);
+    d3.selectAll("path")
+        .style("fill", d => {
+            if(d != undefined){
+
+                console.log("d ", d['data'][colName]); 
+                console.log(colorXScale(d['data'][colName])); 
+                return(colorXScale(d['data'][colName]))}
+
+            }
+        );
+
+        //.attr("stroke", "blue");
 }
 
 function filterAxis(colName) {
