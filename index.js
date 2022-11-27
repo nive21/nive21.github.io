@@ -15,7 +15,8 @@ let col_values;
 let col_types;
 let filtering = false;
 let newSize;
-let change;
+let change = 0;
+let currChange;
 
 let tip;
 
@@ -174,12 +175,14 @@ Promise.all(array).then(function (data1) {
         changeColor(e.target.value);
     }
 
+    document.getElementById("pickSize").value = parseFloat(currSize);
+
     document.querySelector("#pickSize").onchange = e => {
         // console.log(e.target.value);
         currSize = e.target.value;
         changeSize(e.target.value);
 
-        console.log(currSize);
+        // console.log(currSize);
     }
 
     d3.select("#dropdownMenuButton1")
@@ -837,15 +840,16 @@ function fingerSwipe(ev){
             var yDiff = prevPotrLoc[0].y - ev.clientY;
     
             if (Math.abs(xDiff) > Math.abs(yDiff)) {
+                change = 0;
                 // console.log("inside three!!!")
                 if (xDiff > 0) {
                     /* right swipe: undo */
                     console.log('swipe left')
-                    redoAction();
+                    undoAction();
                 } else if (xDiff < 0) {
                     /* left swipe: redo */
                     console.log('swipe right');
-                    undoAction();
+                    redoAction();
                 }
             }
     
@@ -882,7 +886,7 @@ function fingerSwipe(ev){
             curDiff = Math.sqrt(x * x + y * y);
             // console.log("currsize", typeof(parseFloat(currSize)), parseFloat(currSize))
 
-            if(prevDiff > 0){
+            if(prevDiff > 0 && change > 1){
 
                 newSize = parseFloat(currSize) + (curDiff - prevDiff)/10;
                 // console.log(newSize, parseFloat(currSize), prevDiff);
@@ -890,12 +894,22 @@ function fingerSwipe(ev){
                 if (newSize >= 10 && newSize <= 40) {
                     currSize = newSize;
     
-                    // if (curDiff > prevDiff) {
-                    //     change = "inc size ";
-                    // }
-                    // if (curDiff < prevDiff) {
-                    //     change = "reduce size ";
-                    // }                
+                    if (curDiff > prevDiff) {
+                        console.log("inc size ");
+                        if(currChange == "inc"){
+                            change += 1;
+                        }
+                        currChange = "inc"
+                        
+                    }
+                    if (curDiff < prevDiff) {
+                        console.log("reduce size ");
+                        if(currChange == "dec"){
+                            change += 1;
+                        }
+                        currChange = "dec"
+                        change += 1;
+                    }                
                     
                     // console.log(change, parseFloat(currSize), curDiff, prevDiff);
                     changeSize(parseFloat(currSize));
