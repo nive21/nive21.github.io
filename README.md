@@ -49,3 +49,4 @@ https://stackoverflow.com/questions/11832914/how-to-round-to-at-most-2-decimal-p
 https://www.w3schools.com/jsref/prop_color_value.asp
 https://bl.ocks.org/mbostock/1424037
 https://stackoverflow.com/questions/30474474/jquery-change-function-on-ionslider-not-working 
+https://stackoverflow.com/questions/11246758/how-to-get-unique-values-in-an-array

@@ -1310,10 +1310,12 @@ function createDropDown(data, cols) {
         .enter()
         .append("li")
         .append("a")
-        .attr("class", "dropdown-item")
+        .attr("class", (d, i) => { if (d == "Candy") { return "dropdown-item disabled"; } else { return "dropdown-item" } })
+        .attr("tabindex", (d, i) => { if (d == "Candy") { return "-1"; } })
+        .attr("aria-disabled", (d, i) => { if (d == "Candy") { return "true"; } })
         .text((d) => (d[0].toUpperCase() + d.slice(1)))
         .on('pointerdown', function (e, d) {
-            console.log("att", d);
+            // console.log("att", d);
             changeColorByColumn(d);
         });
 
@@ -1795,38 +1797,48 @@ function sortAxis(colName) {
 
 function changeColorByColumn(colName){
     d3.select("#dropdownMenuButton3").text(colName);
-
     let list_items = allData.map((d) => d['data'][colName]);
-    // console.log("items", list_items);
-    // console.log("min", Math.min(...list_items));
-    // console.log("max", Math.max(...list_items));
 
-    let min = Math.min(...list_items);
-    let max = Math.max(...list_items);
-
-    //Ref: https://stackoverflow.com/questions/41848677/how-to-make-a-color-scale-in-d3-js-to-use-in-fill-attribute
-    var colors = d3.scaleLinear()
-    .range(["#5E4FA2", "#3288BD", "#66C2A5", "#ABDDA4", "#E6F598", "#FFFFBF", "#FEE08B", "#FDAE61", "#F46D43", "#D53E4F", "#9E0142"]);
-
-
-    let minMax = d3.extent(currentData, function (d) {
-        return d.data[attribute];
-    });
-    colorXScale = d3.scaleLinear().domain([min, max]).range(["#42eba1", "blue"]);
+    if(['Win Percent', 'Sugar Percent', 'Price Percent'].includes(colName)){
+        
+        // console.log("items", list_items);
+        // console.log("min", Math.min(...list_items));
+        // console.log("max", Math.max(...list_items));
     
-    console.log(colorXScale);
-    d3.selectAll("path")
-        .style("fill", d => {
-            if(d != undefined){
+        let min = Math.min(...list_items);
+        let max = Math.max(...list_items);
+    
+        //Ref: https://stackoverflow.com/questions/41848677/how-to-make-a-color-scale-in-d3-js-to-use-in-fill-attribute
+        colorXScale = d3.scaleLinear().domain([min, max]).range(d3.schemeSet3);
+        
+        // console.log(colorXScale);
+        d3.selectAll("path")
+            .style("fill", d => {
+                if(d != undefined){    
+                    // console.log("d ", d['data'][colName]); 
+                    // console.log(colorXScale(d['data'][colName])); 
+                    return(colorXScale(d['data'][colName]))}
+    
+                }
+            );
+    } else {
+        console.log("Not numeric! :)");
+        console.log("set", [...new Set(list_items)]);
 
-                console.log("d ", d['data'][colName]); 
-                console.log(colorXScale(d['data'][colName])); 
-                return(colorXScale(d['data'][colName]))}
-
-            }
-        );
-
-        //.attr("stroke", "blue");
+        colorXScale = d3.scaleLinear().domain([...new Set(list_items)]).range(["#42eba1", "blue"]);
+        
+        // console.log(colorXScale);
+        d3.selectAll("path")
+            .style("fill", d => {
+                if(d != undefined){    
+                    // console.log("d ", d);
+                    // console.log("d ", d['data'][colName]); 
+                    // console.log(colorXScale(d['data'][colName])); 
+                    return(colorXScale(d['data'][colName]))
+                    }    
+                }
+            );
+    }
 }
 
 function filterAxis(colName) {
