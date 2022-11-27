@@ -18,6 +18,7 @@ let filtering = false;
 let newSize;
 let change = 0;
 let currChange;
+let colorEncodingAttribute = false;
 
 let tip;
 
@@ -1291,7 +1292,7 @@ function createDropDown(data, cols) {
         .text((d) => (d[0].toUpperCase() + d.slice(1)))
         .on('pointerdown', function (e, d) {
 
-            let index = columns.indexOf(d);
+            index = columns.indexOf(d);
             // console.log("att", d, index);
             attribute = d;
             changeXAxis(index);
@@ -1316,6 +1317,7 @@ function createDropDown(data, cols) {
         .text((d) => (d[0].toUpperCase() + d.slice(1)))
         .on('pointerdown', function (e, d) {
             // console.log("att", d);
+            colorEncodingAttribute = d;
             changeColorByColumn(d);
         });
 
@@ -1648,6 +1650,13 @@ function changeShape(shapeId) {
             }
             d3.selectAll(".unit svg rect").attr("fill", "none");
         }
+
+        // console.log(colorEncodingAttribute);
+
+        if (colorEncodingAttribute){
+            // console.log("trying to change colors...", colorEncodingAttribute);
+            changeColorByColumn(colorEncodingAttribute);
+        }
     }
     defineLassoSelection();
     // restore zoomed state
@@ -1828,8 +1837,8 @@ function changeColorByColumn(colName){
         for (let d of currentData) {
             let name = "#unit-" + d.id;
 
-            console.log("d ", d['data'][colName]);
-            console.log(colorXScale(d['data'][colName]));
+            // console.log("d ", d['data'][colName]);
+            // console.log(colorXScale(d['data'][colName]));
             let color = colorXScale(d['data'][colName]);
 
             d3.select(name)
