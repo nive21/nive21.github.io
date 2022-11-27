@@ -907,7 +907,7 @@ function fingerSwipe(ev){
                     currSize = newSize;
     
                     if (curDiff > prevDiff) {
-                        console.log("inc size ");
+                        // console.log("inc size ", change);
                         if(currChange == "inc"){
                             change += 1;
                         }
@@ -915,7 +915,7 @@ function fingerSwipe(ev){
                         
                     }
                     if (curDiff < prevDiff) {
-                        console.log("reduce size ");
+                        // console.log("reduce size ", change);
                         if(currChange == "dec"){
                             change += 1;
                         }
@@ -924,7 +924,7 @@ function fingerSwipe(ev){
                     }                
                     
                     // console.log(change, parseFloat(currSize), curDiff, prevDiff);
-                    if(change > 1){
+                    if(change > 2){
                         
                         changeSize(parseFloat(currSize));
                         document.getElementById("pickSize").value = parseFloat(currSize);
@@ -1811,8 +1811,11 @@ function changeColorByColumn(colName){
         //Ref: https://stackoverflow.com/questions/41848677/how-to-make-a-color-scale-in-d3-js-to-use-in-fill-attribute
         colorXScale = d3.scaleLinear().domain([min, max]).range(["#42eba1", defaultColor]);
         
+    } else {
+        colorXScale = d3.scaleLinear().domain([...new Set(list_items)]).range(["#42eba1", defaultColor]);//.range(d3.schemeSet3);
+    }
         // console.log(colorXScale);
-        d3.selectAll("path")
+        d3.selectAll("path.unit")
             .style("fill", d => {
                 if(d != undefined){    
                     // console.log("d ", d['data'][colName]); 
@@ -1821,24 +1824,17 @@ function changeColorByColumn(colName){
     
                 }
             );
-    } else {
-        console.log("Not numeric! :)");
-        console.log("set", [...new Set(list_items)]);
-
-        colorXScale = d3.scaleLinear().domain([...new Set(list_items)]).range(["#42eba1", defaultColor]);//.range(d3.schemeSet3);
         
-        // console.log(colorXScale);
-        d3.selectAll("path")
-            .style("fill", d => {
-                if(d != undefined){    
-                    // console.log("d ", d);
-                    // console.log("d ", d['data'][colName]); 
-                    // console.log(colorXScale(d['data'][colName])); 
-                    return(colorXScale(d['data'][colName]))
-                    }    
-                }
-            );
-    }
+        for (let d of currentData) {
+            let name = "#unit-" + d.id;
+
+            console.log("d ", d['data'][colName]);
+            console.log(colorXScale(d['data'][colName]));
+            let color = colorXScale(d['data'][colName]);
+
+            d3.select(name)
+                .style("fill", color);
+        }
 }
 
 function filterAxis(colName) {
