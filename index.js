@@ -845,11 +845,11 @@ function fingerSwipe(ev){
                 if (xDiff > 0) {
                     /* right swipe: undo */
                     console.log('swipe left')
-                    undoAction();
+                    redoAction();
                 } else if (xDiff < 0) {
                     /* left swipe: redo */
                     console.log('swipe right');
-                    redoAction();
+                    undoAction();
                 }
             }
     
