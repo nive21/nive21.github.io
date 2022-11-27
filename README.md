@@ -36,6 +36,8 @@ https://stackoverflow.com/questions/22849622/how-to-access-key-values-in-an-obje
 https://www.w3schools.com/jquery/jquery_noconflict.asp
 https://stackoverflow.com/questions/24620741/get-selected-item-value-from-bootstrap-dropdown-with-specific-id
 https://stackoverflow.com/questions/71647787/how-to-get-a-value-from-color-picker-in-javascript-and-use-the-color-value-later
+https://stackoverflow.com/questions/41848677/how-to-make-a-color-scale-in-d3-js-to-use-in-fill-attribute
+https://stackoverflow.com/questions/1669190/find-the-min-max-element-of-an-array-in-javascript
 
 
 Misc. tasks:
