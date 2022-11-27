@@ -1809,7 +1809,7 @@ function changeColorByColumn(colName){
         let max = Math.max(...list_items);
     
         //Ref: https://stackoverflow.com/questions/41848677/how-to-make-a-color-scale-in-d3-js-to-use-in-fill-attribute
-        colorXScale = d3.scaleLinear().domain([min, max]).range(d3.schemeSet3);
+        colorXScale = d3.scaleLinear().domain([min, max]).range(["#42eba1", defaultColor]);
         
         // console.log(colorXScale);
         d3.selectAll("path")
@@ -1825,7 +1825,7 @@ function changeColorByColumn(colName){
         console.log("Not numeric! :)");
         console.log("set", [...new Set(list_items)]);
 
-        colorXScale = d3.scaleLinear().domain([...new Set(list_items)]).range(["#42eba1", "blue"]);
+        colorXScale = d3.scaleLinear().domain([...new Set(list_items)]).range(["#42eba1", defaultColor]);//.range(d3.schemeSet3);
         
         // console.log(colorXScale);
         d3.selectAll("path")
