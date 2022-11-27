@@ -1310,6 +1310,7 @@ function createDropDown(data, cols) {
         .text((d) => (d[0].toUpperCase() + d.slice(1)))
         .on('pointerdown', function (e, d) {
             console.log("att", d);
+            changeColorByColumn(d);
         });
 
     d3.select("#dropdown-menu4")
@@ -1786,6 +1787,10 @@ function sortAxis(colName) {
 
     d3.select("#dropdownMenuButton6")
         .text(colName);
+}
+
+function changeColorByColumn(colName){
+    d3.select("#dropdownMenuButton3").text(colName);
 }
 
 function filterAxis(colName) {
