@@ -886,7 +886,9 @@ function fingerSwipe(ev){
             curDiff = Math.sqrt(x * x + y * y);
             // console.log("currsize", typeof(parseFloat(currSize)), parseFloat(currSize))
 
-            if(prevDiff > 0 && change > 1){
+            // console.log("change ", change);
+
+            if(prevDiff > 0){
 
                 newSize = parseFloat(currSize) + (curDiff - prevDiff)/10;
                 // console.log(newSize, parseFloat(currSize), prevDiff);
@@ -912,10 +914,13 @@ function fingerSwipe(ev){
                     }                
                     
                     // console.log(change, parseFloat(currSize), curDiff, prevDiff);
-                    changeSize(parseFloat(currSize));
-                    document.getElementById("pickSize").value = parseFloat(currSize);
-                }
+                    if(change > 1){
+                        
+                        changeSize(parseFloat(currSize));
+                        document.getElementById("pickSize").value = parseFloat(currSize);
 
+                    }
+                }
             }
 
             prevDiff = curDiff;
