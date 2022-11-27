@@ -26,6 +26,7 @@ Slider: http://ionden.com/a/plugins/ion.rangeSlider/start.html
 Icons: https://www.tutorialrepublic.com/twitter-bootstrap-tutorial/bootstrap-icons.php, https://icons.getbootstrap.com/
 Radio buttons: https://getbootstrap.com/docs/5.0/forms/checks-radios/
 Pinch to zoom: https://danburzo.ro/dom-gestures/
+Colors: https://d3-graph-gallery.com/graph/custom_color.html
 
 
 Debugging references:
