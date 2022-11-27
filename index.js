@@ -653,7 +653,7 @@ function doubleTapHandler(ev) {
     detectTwoPointersDoubleTap();
     detectMultiplePointersOnScreen();
     prevDiff = -1;
-    console.log("inside doubetap handler")
+    // console.log("inside doubetap handler")
 }
 
 function detectOnePointerDoubleTap() {
@@ -880,33 +880,31 @@ function fingerSwipe(ev){
             let x = evCache[1].clientX - evCache[0].clientX;
             let y = evCache[1].clientY - evCache[0].clientY;
             curDiff = Math.sqrt(x * x + y * y);
-            console.log("currsize", typeof(parseFloat(currSize)), parseFloat(currSize))
+            // console.log("currsize", typeof(parseFloat(currSize)), parseFloat(currSize))
 
             if(prevDiff > 0){
 
                 newSize = parseFloat(currSize) + (curDiff - prevDiff)/10;
-                console.log(newSize, parseFloat(currSize), prevDiff);
+                // console.log(newSize, parseFloat(currSize), prevDiff);
         
-                if (newSize > 10 && newSize < 40) {
+                if (newSize >= 10 && newSize <= 40) {
                     currSize = newSize;
     
-                    if (curDiff > prevDiff) {
-                        change = "inc size ";
-                    }
-                    if (curDiff < prevDiff) {
-                        change = "reduce size ";
-                    }                
+                    // if (curDiff > prevDiff) {
+                    //     change = "inc size ";
+                    // }
+                    // if (curDiff < prevDiff) {
+                    //     change = "reduce size ";
+                    // }                
                     
-                    console.log(change, parseFloat(currSize), curDiff, prevDiff);
-                    changeSize(parseFloat(currSize))
+                    // console.log(change, parseFloat(currSize), curDiff, prevDiff);
+                    changeSize(parseFloat(currSize));
+                    document.getElementById("pickSize").value = parseFloat(currSize);
                 }
 
             }
 
             prevDiff = curDiff;
-
-            /* reset values */
-            // prevPotrLoc = undefined;
         }
     }
 }
