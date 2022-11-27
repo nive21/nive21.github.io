@@ -1515,6 +1515,11 @@ function changeSize(newSize) {
 
     // empty redo stack
     redoStack = [];
+    // console.log("col", colorEncodingAttribute);
+    if (colorEncodingAttribute){
+        // console.log("trying to change colors...", colorEncodingAttribute);
+        changeColorByColumn(colorEncodingAttribute);
+    }
 }
 
 function updateSize(selection, newSize) {
