@@ -1426,7 +1426,7 @@ function getColforSize(colname) {
 }
 
 function changeSizeByCol(colname, min, max) {
-    // console.log("data", currentData);
+    console.log("data", currentData);
 
     d3.select("#dropdownMenuButton5")
         .text(colname);
@@ -1434,13 +1434,14 @@ function changeSizeByCol(colname, min, max) {
     //for (let i = 0; i < currentData.length; i++) {
     for (let d of currentData) {
         //let name = "#unit-icon-" + i + " svg";
-        let name = "#unit-icon-" + d.id + " svg";
+        let name = "#unit-icon-" + d.id;
         //let currsize = currentData[i]['data'][colname];
         let currsize = d.data[colname];
         let reqsize = (((currsize - min) * (40 - 10)) / (max - min)) + 10;
 
         //console.log("curr", reqsize);
-        d3.select(name).attr('width', reqsize).attr('height', reqsize);
+        // d3.select(name).attr('width', reqsize).attr('height', reqsize);
+        updateSize(d3.select(name), parseInt(reqsize))
     }
 }
 
