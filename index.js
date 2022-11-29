@@ -172,16 +172,16 @@ Promise.all(array).then(function (data1) {
     createAccordion(allData, cols);
     createDropDown(allData, cols);
 
-
-
     //cols = Object.keys(currentData[0].data);
     //visualize(11); //groupByAttribute, create, update
     createVisualization();
     updateVisualization();
 
     document.querySelector("#colorPicker").onchange = e => {
+        colorEncodingAttribute = false;
         // console.log(e.target.value);
         changeColor(e.target.value);
+        d3.selectAll("#dropdownMenuButton3").text("None");
     }
 
     document.getElementById("pickSize").value = parseFloat(currSize);
@@ -190,7 +190,7 @@ Promise.all(array).then(function (data1) {
         // console.log(e.target.value);
         currSize = e.target.value;
         changeSize(e.target.value);
-
+        d3.selectAll("#dropdownMenuButton5").text("None");
         // console.log(currSize);
     }
 
