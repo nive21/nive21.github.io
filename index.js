@@ -19,6 +19,7 @@ let newSize;
 let change = 0;
 let currChange;
 let colorEncodingAttribute = false;
+let tooltip;
 
 let tip;
 
@@ -203,15 +204,15 @@ Promise.all(array).then(function (data1) {
     d3.select('#x-axis-label')
         .text(attribute);
 
-    tooltipTriggerList = [].slice.call(
-        document.querySelectorAll('[data-toggle="tooltip"]')
-    );
+    // tooltipTriggerList = [].slice.call(
+    //     document.querySelectorAll('[data-toggle="tooltip"]')
+    // );
 
-    tooltipTriggerList.map(function (tooltipTriggerEl) {
-        return new bootstrap.Tooltip(tooltipTriggerEl);
-    });
+    // tooltipTriggerList.map(function (tooltipTriggerEl) {
+    //     return new bootstrap.Tooltip(tooltipTriggerEl);
+    // });
 
-    // document.addEventListener("contextmenu", function(event) {event.preventDefault();}, false);
+    document.addEventListener("contextmenu", function(event) {event.preventDefault();}, false);
 
     d3.select("#selection")
         .append("xhtml:body")
@@ -393,14 +394,37 @@ function updateUnitViz(tx = 1, tk = 1, shapesData = [], SVGsData = []) {
             // else return all_shapes[curDataAttrs[d.id].shapeId].size(curDataAttrs[d.id].size * defSizeRatio)();
         })
         .style('fill', d => curDataAttrs[d.id].color)
-        .attr("data-toggle", "tooltip")
-        .attr("data-placement", "top")
-        .attr("title", d => d['data']['Candy'])
+        // .attr("data-toggle", "tooltip")
+        // .attr("data-placement", "top")
+        // .attr("title", d => d['data']['Candy'])
         .attr('transform', d => plotXY(d, tx, tk))
         .on("pointerdown", function(e, d){
-            console.log(d, " was tapped on!")
-            showToolTip(d['id']);
-        });
+            let positions = returnXY(d, tx, tk);
+            d3.select("#tool-tip")
+                .style("opacity", "1")
+                .style("left", positions[0] + "px")
+                .style("top", positions[1] + "px")
+        })
+        .on("pointerup", function(e, d){
+            d3.select("#tool-tip")
+                .attr("duration", "3000")
+                .style("opacity", "0");
+        })
+        .on("mouseover", function(e, d){
+            let positions = returnXY(d, tx, tk);
+            d3.select("#tool-tip")
+                // .style("cursor", "pointer")
+                .style("opacity", "1")
+                .style("left", positions[0] + "px")
+                .style("top", positions[1] + "px")
+                .html(d['data']['Candy'])
+        })
+        .on("mouseout", function(e, d){
+            d3.select("#tool-tip")
+                .attr("duration", "3000")
+                .style("opacity", "0");
+        })
+
 
 
     // update gs
@@ -411,10 +435,38 @@ function updateUnitViz(tx = 1, tk = 1, shapesData = [], SVGsData = []) {
         }).join("g") //image
         .attr("class", "unit")
         .attr("id", d => `unit-icon-${d.id}`)
-        .attr("data-toggle", "tooltip")
-        .attr("data-placement", "top")
-        .attr("title", d => d['data']['Candy'])
-        .attr('transform', d => `${plotXY(d, tx, tk)} translate(-10, -10)`);
+        // .attr("data-toggle", "tooltip")
+        // .attr("data-placement", "top")
+        // .attr("title", d => d['data']['Candy'])
+        .attr('transform', d => `${plotXY(d, tx, tk)} translate(-10, -10)`)
+        .on("pointerdown", function(e, d){
+            let positions = returnXY(d, tx, tk);
+            d3.select("#tool-tip")
+                .style("opacity", "1")
+                .style("left", positions[0] + "px")
+                .style("top", positions[1] + "px")
+        })
+        .on("pointerup", function(e, d){
+            d3.select("#tool-tip")
+                .attr("duration", "3000")
+                .style("opacity", "0");
+        })
+        .on("mouseover", function(e, d){
+            let positions = returnXY(d, tx, tk);
+            d3.select("#tool-tip")
+                // .text("Rev")
+                // .style("cursor", "pointer")
+                .style("opacity", "1")
+                .style("left", positions[0] + "px")
+                .style("top", positions[1] + "px")
+                .html(d['data']['Candy'])
+        })
+        .on("mouseout", function(e, d){
+            d3.select("#tool-tip")
+                .attr("duration", "3000")
+                .style("opacity", "0");
+        })
+
 
     // adds svgs to gs -- while adding back old svgs on filter, it retains the properties of the unit vises
     // note: this only appends svgs to newly created gs. This won't update an svg.
@@ -444,12 +496,22 @@ function updateUnitViz(tx = 1, tk = 1, shapesData = [], SVGsData = []) {
     }
     d3.selectAll(".unit svg rect").attr("fill", "none");
     defineLassoSelection();
+
+    // d3.selectAll('path.unit')
+    //     .attr("data-toggle", "tooltip")
+    //     .attr("data-placement", "top")
+    //     .attr("title", "Just checking!");
+
+    // d3.selectAll('.custom-icon path')
+    //     .attr("data-toggle", "tooltip")
+    //     .attr("data-placement", "top")
+    //     .attr("title", "Just checking!");
 }
 
-function showToolTip(id){
-    d3.select("#unit-icon-" + id)
-        .attr("data-toggle", "tooltip")
-}
+// function showToolTip(id){
+//     d3.select("#unit-icon-" + id)
+//         .attr("data-toggle", "tooltip")
+// }
 
 function plotXY(d, tx = 1, tk = 1) {
     let x, y;
@@ -467,6 +529,26 @@ function plotXY(d, tx = 1, tk = 1) {
         y = unitYScale(Math.floor((order - 1) / numRowElements));
     }
     return `translate(${tx + (x * tk)}, ${y})`;
+}
+
+function returnXY(d, tx = 1, tk = 1) {
+    let x, y;
+    if (attribute != null) {
+        let order = curDataAttrs[d.id]['groupBy'].order;
+        if (!isNumericScale) {
+            // update the range of x-scale for unit vis to the x value of the column
+            bandwidth = xScale.bandwidth() * 2;
+            unitXScale.range([xScale(String(d.data[attribute])),
+            xScale(String(d.data[attribute])) + bandwidth]);
+            x = unitXScale((order - 1) % numRowElements);
+        } else {
+            x = xScale(d.data[attribute]); // numeric scale
+        }
+        y = unitYScale(Math.floor((order - 1) / numRowElements));
+    }
+    let left = tx + (x * tk)
+    console.log("left, ", left, y)
+    return [parseInt(tx + (x * tk)), (y-10)];
 }
 
 /* Helper functions */
@@ -629,11 +711,7 @@ function setData(d) {
 */
 function setHandlers(name) {
     // Install event handlers for the given element    
-
-    // if(name == ".unit"){
-    //     let el = document.getElementsByClassName(name);
-    //     el.onpointerdown = showToolTip;
-    // } else {        
+       
         const el = document.getElementById(name);
         el.onpointerdown = pointerdownHandler;
 
@@ -648,7 +726,6 @@ function setHandlers(name) {
         // console.log("cache", evCacheContent.length);
         
         el.onpointermove = fingerSwipe;
-    // }
 
     // move handlers for different targets
     // if (name === 'lasso-selectable-area')
@@ -1679,8 +1756,6 @@ function changeShape(shapeId) {
             d3.selectAll(".unit svg rect").attr("fill", "none");
         }
 
-        // console.log(colorEncodingAttribute);
-
         if (colorEncodingAttribute){
             // console.log("trying to change colors...", colorEncodingAttribute);
             changeColorByColumn(colorEncodingAttribute);
@@ -1766,9 +1841,9 @@ function updateShapes2(selection, shape, shapeId) {
             let g = d3.select(`#unit-icon-${id}`)
                 .append('g')
                 .attr("class", "unit")
-                .attr("data-toggle", "tooltip")
-                .attr("data-placement", "top")
-                .attr("title", dataPt.data['Candy'])
+                // .attr("data-toggle", "tooltip")
+                // .attr("data-placement", "top")
+                // .attr("title", dataPt.data['Candy'])
                 .attr("id", `unit-icon-${id}`)
                 .attr('transform', `${plotXY(dataPt)} translate(-10, -10)`);
             g.node().append(s.cloneNode(true));
@@ -2096,23 +2171,6 @@ onlongtouch = function () {
     }
     updateXAttribute(attribute);
 }
-
-// function touchStartTip(){
-//     if (!timer2) {
-//       timer2 = setTimeout(showToolTip, 800);
-//     }
-//   }
-
-// function touchEndTip(){
-//     if (timer2) {
-//       clearTimeout(timer2)
-//       timer2 = false;
-//     }
-// }
-
-// showToolTip = function(){
-//     d3.select("#side-panel").style("background-color", "black");    
-// }
 
 document.addEventListener("DOMContentLoaded", function () {
     document.querySelector("#x-axis-label").addEventListener("touchstart", touchStart);
