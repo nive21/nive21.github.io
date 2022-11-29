@@ -107,8 +107,11 @@ Promise.all(array).then(function (data1) {
     for (let i = 0; i < 7; i++) {
         d3.select("#shapes")
             .append("svg")
-            .attr("width", "20")
+            .attr("width", "50")
             .attr("height", "20")
+            .style("transform", "translateX(8px)")
+            // .style("padding", "20px")
+            .style("scale", "200%")
             .append("path")
             .attr("class", "pickShape")
             .style("cursor", "pointer")
@@ -134,7 +137,11 @@ Promise.all(array).then(function (data1) {
         .style("display", "inline");
 
     d3.selectAll("#shape-" + shapeNum + " svg")
-        .attr("id", "shape-" + shapeNum);
+        .attr("id", "shape-" + shapeNum)
+        .style("margin-top", "30px")
+        // .style("margin-right", "15px")
+        .attr("width", "26px")
+        .style("scale", "180%");
 
     lastShape.on('pointerdown', function (e, d) {
         changeShape(e['target']['parentElement']['id'].slice(6));
@@ -488,7 +495,13 @@ function importImgSVG(data) {
             .style("display", "inline");
 
         d3.selectAll("#shape-" + shapeNum + " svg")
-            .attr("id", "shape-" + shapeNum);
+            .attr("id", "shape-" + shapeNum)
+            .style("margin-top", "30px")
+            .style("scale", "180%")
+            // .style("width", "45px")
+            .style("margin-left", "20px")
+            // .style("margin-right", "15px")
+            .attr("width", "26px")
 
         lastShape.on('pointerdown', function (e, d) {
             changeShape(e['target']['parentElement']['id'].slice(6));
