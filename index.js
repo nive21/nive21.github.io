@@ -396,7 +396,11 @@ function updateUnitViz(tx = 1, tk = 1, shapesData = [], SVGsData = []) {
         .attr("data-toggle", "tooltip")
         .attr("data-placement", "top")
         .attr("title", d => d['data']['Candy'])
-        .attr('transform', d => plotXY(d, tx, tk));
+        .attr('transform', d => plotXY(d, tx, tk))
+        .on("pointerdown", function(e, d){
+            console.log(d, " was tapped on!")
+            showToolTip(d['id']);
+        });
 
 
     // update gs
@@ -440,6 +444,11 @@ function updateUnitViz(tx = 1, tk = 1, shapesData = [], SVGsData = []) {
     }
     d3.selectAll(".unit svg rect").attr("fill", "none");
     defineLassoSelection();
+}
+
+function showToolTip(id){
+    d3.select("#unit-icon-" + id)
+        .attr("data-toggle", "tooltip")
 }
 
 function plotXY(d, tx = 1, tk = 1) {
@@ -619,30 +628,27 @@ function setData(d) {
 * Source: https://developer.mozilla.org/en-US/docs/Web/API/Pointer_events/Multi-touch_interaction
 */
 function setHandlers(name) {
-    // Install event handlers for the given element
-    const el = document.getElementById(name);
-    el.onpointerdown = pointerdownHandler;
+    // Install event handlers for the given element    
 
-    // Use same handler for pointer{up,cancel,out,leave} events since
-    // the semantics for these events - in this app - are the same.
-    el.onpointerup = pointerupHandler;
-    el.onpointercancel = pointerupHandler;
-    //el.onpointerout = pointerupHandler; // moving to descendent (unit circles) triggers pointerout 
-    el.onpointerleave = pointerupHandler;
+    // if(name == ".unit"){
+    //     let el = document.getElementsByClassName(name);
+    //     el.onpointerdown = showToolTip;
+    // } else {        
+        const el = document.getElementById(name);
+        el.onpointerdown = pointerdownHandler;
 
-    // el.onpointermove = pinchZoom(ev, 'xy');
-    // console.log("cache", evCacheContent.length);
-    
-    el.onpointermove = fingerSwipe;
-    // if(evCacheContent.length === 3)
-    // {
-    //     el.onpointermove = threeFingerSwipe;
+        // Use same handler for pointer{up,cancel,out,leave} events since
+        // the semantics for these events - in this app - are the same.
+        el.onpointerup = pointerupHandler;
+        el.onpointercancel = pointerupHandler;
+        //el.onpointerout = pointerupHandler; // moving to descendent (unit circles) triggers pointerout 
+        el.onpointerleave = pointerupHandler;
+
+        // el.onpointermove = pinchZoom(ev, 'xy');
+        // console.log("cache", evCacheContent.length);
+        
+        el.onpointermove = fingerSwipe;
     // }
-    // else if (evCacheContent.length === 2)
-    // {
-    //     el.onpointermove = twoFingerSwipe;
-    // }
-    
 
     // move handlers for different targets
     // if (name === 'lasso-selectable-area')
@@ -736,7 +742,6 @@ function detectMultiplePointersOnScreen() {
         return false;
     }
 }
-
 // function pinchZoomXY(ev) {
 //     ev.preventDefault();
 //     pinchZoom(ev, 'xy')
@@ -2066,9 +2071,7 @@ function orderXAxis(radio) {
 //Code credits: https://codepen.io/eleviven/pen/eYmwzLp
 
 let onlongtouch = false;
-let showToolTip = false;
 let timer = false;
-let timer2 = false;
 
 function touchStart() {
     if (!timer) {
