@@ -539,7 +539,7 @@ function returnXY(d, tx = 1, tk = 1) {
     }
     let left = tx + (x * tk)
     // console.log("left, ", left, y)
-    return [parseInt(tx + (x * tk)), (y-10)];
+    return [parseInt(tx + (x * tk)), (y-50)];
 }
 
 /* Helper functions */
