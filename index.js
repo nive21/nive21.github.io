@@ -399,33 +399,36 @@ function updateUnitViz(tx = 1, tk = 1, shapesData = [], SVGsData = []) {
         // .attr("title", d => d['data']['Candy'])
         .attr('transform', d => plotXY(d, tx, tk))
         .on("pointerdown", function(e, d){
+            // console.log("pointerdown")
             let positions = returnXY(d, tx, tk);
             d3.select("#tool-tip")
-                .style("opacity", "1")
                 .style("left", positions[0] + "px")
                 .style("top", positions[1] + "px")
-        })
-        .on("pointerup", function(e, d){
-            d3.select("#tool-tip")
-                .attr("duration", "3000")
-                .style("opacity", "0");
-        })
-        .on("mouseover", function(e, d){
-            let positions = returnXY(d, tx, tk);
-            d3.select("#tool-tip")
-                // .style("cursor", "pointer")
+                .append("p")
                 .style("opacity", "1")
-                .style("left", positions[0] + "px")
-                .style("top", positions[1] + "px")
                 .html(d['data']['Candy'])
         })
-        .on("mouseout", function(e, d){
-            d3.select("#tool-tip")
-                .attr("duration", "3000")
-                .style("opacity", "0");
+        .on("pointerout", function(e, d){
+            // console.log("pointerout")
+            d3.select("#tool-tip p")
+                .remove();
         })
-
-
+        // .on("mouseover", function(e, d){
+        //     console.log("pointerdown")
+        //     let positions = returnXY(d, tx, tk);
+        //     d3.select("#tool-tip")
+        //         .style("left", positions[0] + "px")
+        //         .style("top", positions[1] + "px")
+        //         .append("p")
+        //         .style("opacity", "1")
+        //         .attr("duration", "100")
+        //         .html(d['data']['Candy'])
+        // })
+        // .on("mouseout", function(e, d){
+        //     console.log("pointerout")
+        //     d3.select("#tool-tip p")
+        //         .remove();
+        // })
 
     // update gs
     d3.selectAll("#chart-content .unit-vis")
@@ -440,31 +443,19 @@ function updateUnitViz(tx = 1, tk = 1, shapesData = [], SVGsData = []) {
         // .attr("title", d => d['data']['Candy'])
         .attr('transform', d => `${plotXY(d, tx, tk)} translate(-10, -10)`)
         .on("pointerdown", function(e, d){
+            // console.log("pointerdown")
             let positions = returnXY(d, tx, tk);
             d3.select("#tool-tip")
-                .style("opacity", "1")
                 .style("left", positions[0] + "px")
                 .style("top", positions[1] + "px")
-        })
-        .on("pointerup", function(e, d){
-            d3.select("#tool-tip")
-                .attr("duration", "3000")
-                .style("opacity", "0");
-        })
-        .on("mouseover", function(e, d){
-            let positions = returnXY(d, tx, tk);
-            d3.select("#tool-tip")
-                // .text("Rev")
-                // .style("cursor", "pointer")
+                .append("p")
                 .style("opacity", "1")
-                .style("left", positions[0] + "px")
-                .style("top", positions[1] + "px")
                 .html(d['data']['Candy'])
         })
-        .on("mouseout", function(e, d){
-            d3.select("#tool-tip")
-                .attr("duration", "3000")
-                .style("opacity", "0");
+        .on("pointerout", function(e, d){
+            // console.log("pointerout")
+            d3.select("#tool-tip p")
+                .remove();
         })
 
 
@@ -547,7 +538,7 @@ function returnXY(d, tx = 1, tk = 1) {
         y = unitYScale(Math.floor((order - 1) / numRowElements));
     }
     let left = tx + (x * tk)
-    console.log("left, ", left, y)
+    // console.log("left, ", left, y)
     return [parseInt(tx + (x * tk)), (y-10)];
 }
 

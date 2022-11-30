@@ -198,4 +198,22 @@ body>svg{
     cursor: pointer;
 }
 
+/* path{
+    cursor: pointer;
+} */
 
+@keyframes opacity_change{
+    0% {opacity: 1;}
+    75% {opacity: 1;}
+    100% {opacity: 0;}
+}
+
+#tool-tip{
+    position: absolute;
+}
+
+/* #tool-tip p{    
+    animation-name: opacity_change;
+    animation-duration: 3s;
+    animation-iteration-count: 1;
+} */

@@ -20,7 +20,7 @@ MD Bootstrap Modal: https://mdbootstrap.com/docs/standard/components/modal/, htt
 MD Bootstrap Dropdown: https://mdbootstrap.com/docs/standard/components/dropdowns/
 List: https://getbootstrap.com/docs/4.0/components/list-group/
 Color Picker: https://getbootstrap.com/docs/5.0/forms/form-control/
-Tooltip: https://codepen.io/Johann-S/pen/rNLPpMv, https://bl.ocks.org/d3noob/a22c42db65eb00d4e369, https://d3-graph-gallery.com/graph/interactivity_tooltip.html
+Tooltip: https://codepen.io/Johann-S/pen/rNLPpMv, https://bl.ocks.org/d3noob/a22c42db65eb00d4e369, https://d3-graph-gallery.com/graph/interactivity_tooltip.html, https://www.w3schools.com/css/css3_animations.asp
 Shapes: https://www.geeksforgeeks.org/d3-js-symboltriangle-symbol/, https://stackoverflow.com/questions/15322556/how-to-remove-an-attribute-in-d3-js, https://observablehq.com/@julesblm/how-d3-symbol-works-by-someone-who-keeps-forgetting-how-it-wo
 Slider: http://ionden.com/a/plugins/ion.rangeSlider/start.html
 Icons: https://www.tutorialrepublic.com/twitter-bootstrap-tutorial/bootstrap-icons.php, https://icons.getbootstrap.com/
