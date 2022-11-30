@@ -212,8 +212,8 @@ body>svg{
     position: absolute;
     height: 50px;
     background-color: rgba(238, 238, 238, 0.959);
-    border: #222222;
-    border-width: 1px;
+    /* border: #222222;
+    border-width: 1px; */
     border-radius: 10px;
     /* background-image: url("images/toolbg.png"); */
 }
