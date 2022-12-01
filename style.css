@@ -224,3 +224,7 @@ body>svg{
     animation-iteration-count: 1; */
     margin: 10px;
 }
+
+#upload-text{
+    margin-bottom: 0px;
+}

@@ -113,6 +113,7 @@ Promise.all(array).then(function (data1) {
             .style("transform", "translateX(8px)")
             // .style("padding", "20px")
             .style("scale", "200%")
+            .style("margin-top", "30px")
             .append("path")
             .attr("class", "pickShape")
             .style("cursor", "pointer")
@@ -219,16 +220,7 @@ Promise.all(array).then(function (data1) {
         .attr("id", "selection-text")
         .html("<br>Lasso-select datapoints to view stats.<br>");
 
-    // add state to undo stack
-    undoStack.push({
-        action: 'default',
-        attribute: attribute,
-        currentData: cloneObj(currentData),
-        curDataAttrs: cloneObj(curDataAttrs),
-        unitVisHtMargin: unitVisHtMargin,
-        unitVisPadding: unitVisPadding,
-        attrSortOrder: attrSortOrder
-    });
+    addActionToUndoStack('default');
 });
 
 function createVisualization() {
@@ -260,9 +252,9 @@ function createVisualization() {
         .append('clipPath')
         .attr('id', 'clipx')
         .append('rect')
-        .attr('x', -10)
+        .attr('x', -20)
         .attr('y', 0)
-        .attr('width', width + 20)
+        .attr('width', width + 40)
         .attr('height', height);
 
 
@@ -285,11 +277,11 @@ function updateVisualization() {
         // xScale.domain(minMax).range([0, width]); // takes number as input
         // sort
         if (attrSortOrder == 0) {
-            xScale.domain(minMax).range([0, width]) // takes number as input
+            xScale.domain(minMax).range([0, width-20]) // takes number as input
 
 
         }
-        else xScale.domain(minMax.reverse()).range([0, width]);
+        else xScale.domain(minMax.reverse()).range([0, width-20]);
     } else { // categorical scale (yes/no)
         xScale = d3.scaleBand();
 
@@ -299,7 +291,7 @@ function updateVisualization() {
         else sortedAxisLabels.sort((a, b) => b.attrName.localeCompare(a.attrName));
 
         //xScale.domain(Object.keys(attrValuesCount)).range([0, width]).paddingInner(.7).paddingOuter(0.7); // takes string as input
-        xScale.domain(sortedAxisLabels.map(d => d.attrValue)).range([0, width]).paddingInner(.7).paddingOuter(0.7); // takes string as input
+        xScale.domain(sortedAxisLabels.map(d => d.attrValue)).range([0, width-20]).paddingInner(.7).paddingOuter(0.7); // takes string as input
 
         // set number of elements in each column
         // get max size in dataset
@@ -541,7 +533,7 @@ function returnXY(d, tx = 1, tk = 1) {
     }
     let left = tx + (x * tk)
     // console.log("left, ", left, y)
-    return [parseInt(tx + (x * tk)), (y - 10)];
+    return [parseInt(tx + (x * tk)), (y - 50)];
 }
 
 /* Helper functions */
@@ -609,23 +601,7 @@ function filterData(attr, lowValue, highValue) {
     groupByAttribute(currentData, attribute);
     updateVisualization();
 
-    undoStack.push({
-        action: 'filterData',
-        attribute: attribute,
-        currentData: cloneObj(currentData),
-        curDataAttrs: cloneObj(curDataAttrs),
-        unitVisHtMargin: unitVisHtMargin,
-        unitVisPadding: unitVisPadding,
-        attrSortOrder: attrSortOrder
-    });
-
-    // empty redo stack
-    redoStack = [];
-
-    // if (colorEncodingAttribute) {
-    //     // console.log("trying to change colors...", colorEncodingAttribute);
-    //     changeColorByColumn(colorEncodingAttribute);
-    // }
+    addActionToUndoStack('filterData');
 }
 
 function sortXAxis(attr) {
@@ -634,19 +610,9 @@ function sortXAxis(attr) {
     groupByAttribute(currentData, attribute);
     updateVisualization();
 
-    // add action to undoStack
-    undoStack.push({
-        action: 'sortXAxis',
-        attribute: attribute,
-        sortOrder: attrSortOrder,
-        currentData: cloneObj(currentData),
-        curDataAttrs: cloneObj(curDataAttrs),
-        unitVisHtMargin: unitVisHtMargin,
-        unitVisPadding: unitVisPadding
-    });
-
-    // empty redo stack
-    redoStack = [];
+    addActionToUndoStack('sortXAxis');
+    // restore to the last zoomed state
+    if (lastZoomState !== {}) zoomed(lastZoomState);
 }
 
 
@@ -884,20 +850,12 @@ function setZoom(t) {
 
 function resetZoom() {
     let chart = d3.select("#chart");
-    // chart.transition().duration(750).call(
-    //     chartZoom.transform,
-    //     d3.zoomIdentity,
-    //     d3.zoomTransform(chart.node()).invert([width / 2, height / 2])
-    // );
-    // let t = lastZoomState.transform;
-    // t.k = -1/t.k;
-    // t.x = -1/t.x;
-    // t.y = 0;
-    chart.transition().duration(750).call(chartZoom.transform, d3.zoomIdentity);
-    // d3.select('.x-axis').selectAll("text")
-    //             .attr("transform", `${d3.zoomIdentity.scale(1 / t.k)} `);
-
-    //setZoom(t)
+    chart.transition().duration(750).call(
+        chartZoom.transform,
+        d3.zoomIdentity,
+        d3.zoomTransform(chart.node()).invert([width / 2, height / 2])
+    );
+    //chart.transition().duration(750).call(chartZoom.transform, d3.zoomIdentity);
 
 }
 
@@ -1310,13 +1268,9 @@ function deselectPoints() {
 
 function undoAction() {
     // when undo is called, keep only the last 30 elements on the stack
-    if (undoStack.length > 30) {
-        undoStack = undoStack.slice(-30);
-    }
     if (undoStack.length > 1) {
         let curAction = undoStack.pop();
         redoStack.push(curAction);
-
         // current displayed state is the last item on undo stack
         let prevAction = undoStack.at(-1);
         if (['changeColor', 'changeShape', 'filterData', 'changeSize', 'sortXAxis', 'updateXAxis', 'default'].includes(prevAction.action)) {
@@ -1349,6 +1303,7 @@ function redoAction() {
             attribute = curAction.attribute;
             d3.select("#dropdownMenuButton1").text(attribute);
             d3.select('#x-axis-label').text(attribute);
+
             setNumericScale();
             groupByAttribute(currentData, attribute);
             updateVisualization();
@@ -1430,7 +1385,6 @@ function createDropDown(data, cols) {
         .attr("class", "dropdown-item")
         .text((d) => (d[0].toUpperCase() + d.slice(1)))
         .on('pointerdown', function (e, d) {
-            attribute = d;
             updateXAxis(columns[columns.indexOf(d)]);
 
         });
@@ -1589,9 +1543,16 @@ function changeSizeByCol(colname, min, max) {
         updateSize(d3.select(name), parseInt(reqsize))
     }
 
+    addActionToUndoStack('changeSize');
+}
+
+function addActionToUndoStack(action) {
+    if (undoStack.length > 30) {
+        undoStack = undoStack.slice(-30);
+    }
     // store action in undo stack
     undoStack.push({
-        action: 'changeSize',
+        action: action,
         currentData: cloneObj(currentData),
         curDataAttrs: cloneObj(curDataAttrs),
         unitVisHtMargin: unitVisHtMargin,
@@ -1602,43 +1563,26 @@ function changeSizeByCol(colname, min, max) {
 
     // empty redo stack
     redoStack = [];
-    // console.log("col", colorEncodingAttribute);
-    // if (colorEncodingAttribute) {
-    //     // console.log("trying to change colors...", colorEncodingAttribute);
-    //     changeColorByColumn(colorEncodingAttribute);
-    // }
 }
 
-function changeColor(defaultColor) {
+function changeColor(color) {
     // lasso selection can be [], or 0 selections as an object
     if (selection.length !== 0 && selection.data().length !== 0)
-        updateColors(selection, defaultColor);
+        updateColors(selection, color);
     // applied to all data points
-    else updateColors(d3.selectAll('.unit'), defaultColor);
-    d3.selectAll("#shapes svg path").style('fill', defaultColor);
+    else updateColors(d3.selectAll('.unit'), color);
+    d3.selectAll("#shapes svg path").style('fill', color);
 
-    // add action to undoStack
-    undoStack.push({
-        action: 'changeColor',
-        attribute: attribute,
-        currentData: cloneObj(currentData),
-        curDataAttrs: cloneObj(curDataAttrs),
-        unitVisHtMargin: unitVisHtMargin,
-        unitVisPadding: unitVisPadding,
-        attrSortOrder: attrSortOrder
-    });
-
-    // empty redo stack
-    redoStack = [];
+    addActionToUndoStack('changeColor');
 }
 
-function updateColors(selection, defaultColor) {
+function updateColors(selection, color) {
     for (let elm of selection) {
         let id = d3.select(elm).attr('id').split('-').at(-1);
         if (!d3.select(`#unit-icon-${id}`).select('svg').empty())
-            d3.select(`#unit-icon-${id}`).select('svg').style('fill', defaultColor);
-        else d3.select(`#unit-icon-${id}`).style('fill', defaultColor);
-        curDataAttrs[id].color = defaultColor;
+            d3.select(`#unit-icon-${id}`).select('svg').style('fill', color);
+        else d3.select(`#unit-icon-${id}`).style('fill', color);
+        curDataAttrs[id].color = color;
     }
 
 }
@@ -1655,23 +1599,6 @@ function changeSize(newSize) {
         unitVisPadding = newSize / 15;
         updateVisualization();
     }
-    // store action in undo stack
-    // undoStack.push({
-    //     action: 'changeSize',
-    //     attribute: attribute,
-    //     currentData: cloneObj(currentData),
-    //     curDataAttrs: cloneObj(curDataAttrs),
-    //     unitVisHtMargin: unitVisHtMargin,
-    //     unitVisPadding: unitVisPadding
-    // });
-
-    // empty redo stack
-    //redoStack = [];
-    // console.log("col", colorEncodingAttribute);
-    // if (colorEncodingAttribute) {
-    //     // console.log("trying to change colors...", colorEncodingAttribute);
-    //     changeColorByColumn(colorEncodingAttribute);
-    // }
     if (lastZoomState !== {}) zoomed(lastZoomState);
 }
 
@@ -1816,47 +1743,26 @@ function changeShape(shapeId) {
     // restore to the last zoomed state
     if (lastZoomState !== {}) zoomed(lastZoomState);
 
-    undoStack.push({
-        action: 'changeShape',
-        attribute: attribute,
-        currentData: cloneObj(currentData),
-        curDataAttrs: cloneObj(curDataAttrs),
-        unitVisHtMargin: unitVisHtMargin,
-        unitVisPadding: unitVisPadding,
-        attrSortOrder: attrSortOrder
-    });
-
-    // empty redo stack
-    redoStack = [];
+    addActionToUndoStack('changeShape');
 }
 
-function updateXAxis(attribute) {
+function updateXAxis(attr) {
     d3.select("#dropdownMenuButton1")
-        .text(attribute);
+        .text(attr);
     d3.select('#x-axis-label')
-        .text(attribute);
+        .text(attr);
 
-    //resetZoom();
+    d3.select("#chart").call(chartZoom.transform, d3.zoomIdentity);
+    updateUnitViz(lastZoomState.transform.x, lastZoomState.transform.k);
+
+    attribute = attr;
 
     setNumericScale();
     groupByAttribute(currentData, attribute);
 
     updateVisualization();
 
-    resetZoom();
-
-    undoStack.push({
-        action: 'updateXAxis',
-        attribute: attribute,
-        currentData: cloneObj(currentData),
-        curDataAttrs: cloneObj(curDataAttrs),
-        unitVisHtMargin: unitVisHtMargin,
-        unitVisPadding: unitVisPadding,
-        attrSortOrder: attrSortOrder
-    });
-
-    // empty redo stack
-    redoStack = [];
+    addActionToUndoStack('updateXAxis');
 }
 
 function sortAxis(colName) {
@@ -1897,16 +1803,7 @@ function changeColorByColumn(colName) {
         d3.select(name).style("fill", color);
     }
 
-    // add state to undo stack
-    undoStack.push({
-        action: 'changeColor',
-        attribute: attribute,
-        currentData: cloneObj(currentData),
-        curDataAttrs: cloneObj(curDataAttrs),
-        unitVisHtMargin: unitVisHtMargin,
-        unitVisPadding: unitVisPadding,
-        attrSortOrder: attrSortOrder
-    });
+    addActionToUndoStack('changeColor');
 }
 
 function filterAxis(colName) {
