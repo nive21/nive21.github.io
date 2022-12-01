@@ -1510,6 +1510,8 @@ function createDropDown(data, cols) {
             // displaySizeLegend(d);
         });
 
+
+
     d3.select("#dropdown-menu7")
         .selectAll("li")
         .data(cols)
@@ -1522,9 +1524,24 @@ function createDropDown(data, cols) {
         .attr("aria-disabled", (d, i) => { if (col_types[i] == "string") { return "true"; } })
         .text((d) => (d[0].toUpperCase() + d.slice(1)))
         .on('pointerdown', function (e, d) {
+
             console.log("filter", d);
             filterAxis(d);
         });
+
+        d3.select("#dropdown-menu7")
+        .append("li")
+        .append("a")
+        .attr("class", "dropdown-item")
+        .text("None")
+        .on('pointerdown', function (e, d) {
+
+            d3.selectAll("#dropdownMenuButton7").text("None");
+            // filterAxis(d);
+            filterData("Chocolate", 0, 1)
+            d3.select("#double-slider").remove();
+        });
+
 
 }
 
