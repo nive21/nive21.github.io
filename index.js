@@ -874,6 +874,24 @@ function setNumericScale() {
 
 var prevPotrLoc = undefined; // pointer 0
 function startFingerSwipe(ev) {
+    if (evCacheContent.length === 4) {
+
+        if (prevPotrLoc === undefined || prevPotrLoc.length == 2  || prevPotrLoc.length == 3) {
+
+            const evCache = getCache(ev);
+            const index = evCache.findIndex((cachedEv) => cachedEv.pointerId === ev.pointerId);
+            evCache[index] = ev;
+            // console.log("three swipe started", ev, evCache[0], evCache[1], evCache[2]);
+            prevPotrLoc = [{ x: evCache[0].clientX, y: evCache[0].clientY }, { x: evCache[1].clientX, y: evCache[1].clientY }, { x: evCache[2].clientX, y: evCache[2].clientY }, { x: evCache[3].clientX, y: evCache[3].clientY }];
+            // console.log(prevPotrLoc);
+        }
+
+
+        // ev.preventDefault();
+        // console.log("four!", evCacheContent);
+        // fingerSwipe();
+
+    } else
     if (evCacheContent.length === 3) {
 
         if (prevPotrLoc === undefined || prevPotrLoc.length == 2) {
@@ -912,7 +930,53 @@ function startFingerSwipe(ev) {
 
 function fingerSwipe(ev) {
 
-    if (evCacheContent.length == 3) {
+    if (evCacheContent.length == 4) {
+
+        const evCache = getCache(ev);
+        // console.log("getcache", ev, evCache[0], evCache[1], evCache[2]);
+        if (ev != undefined && evCache && evCache.length === 4) {
+            console.log("four finger swipe")
+            const index = evCache.findIndex((cachedEv) => cachedEv.pointerId === ev.pointerId);
+            evCache[index] = ev;
+            // console.log("swipe ended", ev, evCache[0], evCache[1], evCache[2]);
+
+            // If two pointers are down and the distance between each pointer move is positive/negative along an axis, determine swipe direction
+            // Calculate the distance between the previous pointer location and current
+            if (prevPotrLoc === undefined) {
+                return;
+            }
+            // var x = ev.clientX;
+            // var y = ev.clientY;
+            // console.log("swipe ended", prevPotrLoc, ev.clientX, ev.clientY)
+            var xDiff = prevPotrLoc[0].x - ev.clientX;
+            var yDiff = prevPotrLoc[0].y - ev.clientY;
+
+            if (Math.abs(xDiff) > Math.abs(yDiff)) {
+                change = 0;
+                // console.log("inside three!!!")
+                if (xDiff > 0) {
+                    /* right swipe: undo */
+                    console.log('swipe left 4')
+                    if(columns.indexOf(attribute)!=12){
+                        updateXAxis(columns[columns.indexOf(attribute) + 1])
+                    }
+                    
+                    // redoAction();
+                } else if (xDiff < 0) {
+                    /* left swipe: redo */
+                    console.log('swipe right 4');
+                    if(columns.indexOf(attribute)!=0){
+                        updateXAxis(columns[columns.indexOf(attribute) - 1])
+                    }
+                    
+                    // undoAction();
+                }
+            }
+
+            /* reset values */
+            prevPotrLoc = undefined;
+        }
+    } else if (evCacheContent.length == 3) {
 
         // console.log("inside three!")
         // console.log("cache", evCacheContent.length);   
@@ -1392,6 +1456,7 @@ function createDropDown(data, cols) {
         .attr("class", "dropdown-item")
         .text((d) => (d[0].toUpperCase() + d.slice(1)))
         .on('pointerdown', function (e, d) {
+            console.log(columns.indexOf(d), columns[columns.indexOf(d)])
             updateXAxis(columns[columns.indexOf(d)]);
 
         });
@@ -1440,7 +1505,8 @@ function createDropDown(data, cols) {
         .text((d) => (d[0].toUpperCase() + d.slice(1)))
         .on('pointerdown', function (e, d) {
             console.log("att", d);
-            getColforSize(d);
+            let sizeAtt = getColforSize(d);
+            displaySizeLegend(sizeAtt[0], sizeAtt[1], sizeAtt[2])
             // displaySizeLegend(d);
         });
 
@@ -1530,7 +1596,7 @@ function getColforSize(colname) {
     });
     console.log("Range", min, max);
     changeSizeByCol(colname, min, max);
-    displaySizeLegend(colname, min, max);
+    return [colname, min, max];
 }
 
 function changeSizeByCol(colname, min, max) {
