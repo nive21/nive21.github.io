@@ -89,7 +89,7 @@ Promise.all(array).then(function (data1) {
     d3.select(svgNode)
         .attr('height', 18)
         .attr('width', 18)
-        .style('fill', 'brown');
+        // .style('fill', 'brown');
     iconSize = 20;
     imgSVGs.push(svgNode);
 
@@ -151,7 +151,7 @@ Promise.all(array).then(function (data1) {
     })
 
     d3.select("#shapes body svg")
-        .style("fill", defaultColor)
+        // .style("fill", defaultColor)
 
     // CHANGE LATER?: initially, use chocolate as an attribute to group on
     //attribute = 'fruity';
@@ -590,8 +590,8 @@ function importImgSVG(data) {
             changeShape(e['target']['parentElement']['id'].slice(6));
         })
 
-        d3.select("#shapes body svg")
-            .style("fill", defaultColor);
+        // d3.select("#shapes body svg")
+            // .style("fill", defaultColor);
     }
 }
 
@@ -1646,7 +1646,7 @@ function changeColor(color) {
         updateColors(selection, color);
     // applied to all data points
     else updateColors(d3.selectAll('.unit'), color);
-    d3.selectAll("#shapes svg path").style('fill', color);
+    d3.selectAll(".pickShape").style('fill', color);
 
     addActionToUndoStack('changeColor');
 }
