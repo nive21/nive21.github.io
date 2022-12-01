@@ -8,7 +8,6 @@ let unitYScale; // scale for unit vis on y-axis
 let xAxis;
 let numRowElements;
 let colorXScale;
-
 let attribute = null;
 
 let tooltipTriggerList;
@@ -20,7 +19,7 @@ let change = 0;
 let currChange;
 let colorEncodingAttribute = false;
 let tooltip;
-
+let legendLinear;
 let tip;
 
 let cols_lower, cols;
@@ -221,6 +220,11 @@ Promise.all(array).then(function (data1) {
         .html("<br>Lasso-select datapoints to view stats.<br>");
 
     addActionToUndoStack('default');
+
+    // var linear = d3.scaleLinear()
+    // .domain([0,10])
+    // .range(["rgb(46, 73, 123)", "rgb(71, 187, 94)"]);
+
 });
 
 function createVisualization() {
@@ -358,6 +362,7 @@ function updateVisualization() {
         .attr("font-size", "1.2em");
 
     defineLassoSelection();
+    // displayLegend();
 
 }
 
@@ -1782,9 +1787,13 @@ function changeColorByColumn(colName) {
         //Ref: https://stackoverflow.com/questions/41848677/how-to-make-a-color-scale-in-d3-js-to-use-in-fill-attribute
         colorXScale = d3.scaleLinear().domain([min, max]).range(["#42eba1", defaultColor]);
 
-    } else {
+    } else if (colName == "Candy"){
         colorXScale = d3.scaleLinear().domain([...new Set(list_items)]).range(["#42eba1", defaultColor]);//.range(d3.schemeSet3);
+    } else {
+        colorXScale = d3.scaleLinear().domain([0, 1]).range(["#42eba1", defaultColor]);//.range(d3.schemeSet3);
     }
+
+    displayLegend(colName);
     d3.selectAll("path.unit")
         .style("fill", d => {
             if (d != undefined) {
@@ -2032,3 +2041,38 @@ document.addEventListener("DOMContentLoaded", function () {
     //   document.querySelector("path").addEventListener("touchstart", touchStartTip);
     //   document.querySelector("path").addEventListener("touchend", touchEndTip);
 })
+
+function displayLegend(colName){
+
+    d3.select("#color-legend p").text("Color is mapped to \"" + colName + "\":")
+
+    legendLinear = d3.legendColor()
+        .shapeWidth(25)
+        .cells(10)
+        .shapePadding(36)
+        .orient('horizontal')
+        .labelOffset(28)
+        .labelFormat(d3.format("0.1f"))
+        .labelAlign("start")
+        .scale(colorXScale)
+
+        if (['Win Percent', 'Sugar Percent', 'Price Percent'].includes(colName)) {
+            legendLinear.cells(10)
+        } else {
+            legendLinear.cells(2)
+        }
+      
+    d3.select("#color-legend")
+        .append("svg")
+        .style("width", "100%")
+        .append("g")
+        .attr("class", "colorCell")
+        .style("transform", "translate(15px, 0px)")
+    
+    // d3.selectAll(".label")
+    //     .style("transform", "translate(10px, 30px) !important")
+    
+    d3.select(".colorCell")
+        .call(legendLinear);
+
+}
