@@ -80,6 +80,7 @@ let imgSVGs = [];
 let attrSortOrder = 0; // 0: ascending, 1: descending
 let currSize = 20;
 const numInitialShapes = 7;
+let firstSizeChange = false;
 
 let array = [d3.csv('dataset/candy-data.csv'), d3.xml('images/candy.svg')]
 Promise.all(array).then(function (data1) {
@@ -214,7 +215,7 @@ Promise.all(array).then(function (data1) {
     //     return new bootstrap.Tooltip(tooltipTriggerEl);
     // });
 
-    // document.addEventListener("contextmenu", function(event) {event.preventDefault();}, false);
+    document.addEventListener("contextmenu", function(event) {event.preventDefault();}, false);
 
     d3.select("#selection")
         .append("xhtml:body")
@@ -2166,6 +2167,19 @@ function displayLegend(colName){
 
 function displaySizeLegend(colName, min, max){
 
+
+    if(firstSizeChange == false){
+        d3.select("#size-legend")
+        .append("svg")
+        .style("width", "100%")
+        .append("g")
+        // .attr("fill", defaultColor)
+        .attr("class", "sizeCell")
+        .style("transform", "translate(15px, 20px)")
+
+        firstSizeChange = true;
+    }
+
     sizeXScale = d3.scaleLinear().domain([min, max]).range([5, 20]);
 
     d3.select("#size-legend p").text("Size is mapped to \"" + colName + "\":")
@@ -2180,19 +2194,11 @@ function displaySizeLegend(colName, min, max){
         .labelAlign("middle")
         .scale(sizeXScale)
 
-        if (['Win Percent', 'Sugar Percent', 'Price Percent'].includes(colName)) {
-            legendSize.cells(10)
-        } else {
-            legendSize.cells(2)
-        }
-      
-    d3.select("#size-legend")
-        .append("svg")
-        .style("width", "100%")
-        .append("g")
-        // .attr("fill", defaultColor)
-        .attr("class", "sizeCell")
-        .style("transform", "translate(15px, 20px)")
+    if (['Win Percent', 'Sugar Percent', 'Price Percent'].includes(colName)) {
+        legendSize.cells(10)
+    } else {
+        legendSize.cells(2)
+    }
 
     d3.select("#size-legend svg g g g circle")
         .attr("fill", defaultColor)
