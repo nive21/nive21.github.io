@@ -9,6 +9,8 @@ let xAxis;
 let numRowElements;
 let colorXScale;
 let attribute = null;
+let sizeXScale;
+let legendSize;
 
 let tooltipTriggerList;
 let col_values;
@@ -1439,6 +1441,7 @@ function createDropDown(data, cols) {
         .on('pointerdown', function (e, d) {
             console.log("att", d);
             getColforSize(d);
+            // displaySizeLegend(d);
         });
 
     d3.select("#dropdown-menu7")
@@ -1527,6 +1530,7 @@ function getColforSize(colname) {
     });
     console.log("Range", min, max);
     changeSizeByCol(colname, min, max);
+    displaySizeLegend(colname, min, max);
 }
 
 function changeSizeByCol(colname, min, max) {
@@ -2047,7 +2051,7 @@ function displayLegend(colName){
     d3.select("#color-legend p").text("Color is mapped to \"" + colName + "\":")
 
     legendLinear = d3.legendColor()
-        .shapeWidth(25)
+        .shapeWidth(34)
         .cells(10)
         .shapePadding(36)
         .orient('horizontal')
@@ -2074,5 +2078,46 @@ function displayLegend(colName){
     
     d3.select(".colorCell")
         .call(legendLinear);
+
+}
+
+function displaySizeLegend(colName, min, max){
+
+    sizeXScale = d3.scaleLinear().domain([min, max]).range([5, 20]);
+
+    d3.select("#size-legend p").text("Size is mapped to \"" + colName + "\":")
+
+    legendSize = d3.legendSize()
+        .shape('circle')
+        .cells(10)
+        .shapePadding(40)
+        .orient('horizontal')
+        .labelOffset(50)
+        .labelFormat(d3.format("0.1f"))
+        .labelAlign("middle")
+        .scale(sizeXScale)
+
+        if (['Win Percent', 'Sugar Percent', 'Price Percent'].includes(colName)) {
+            legendSize.cells(10)
+        } else {
+            legendSize.cells(2)
+        }
+      
+    d3.select("#size-legend")
+        .append("svg")
+        .style("width", "100%")
+        .append("g")
+        // .attr("fill", defaultColor)
+        .attr("class", "sizeCell")
+        .style("transform", "translate(15px, 20px)")
+
+    d3.select("#size-legend svg g g g circle")
+        .attr("fill", defaultColor)
+    
+    // d3.selectAll(".label")
+    //     .style("transform", "translate(10px, 30px) !important")
+    
+    d3.select(".sizeCell")
+        .call(legendSize);
 
 }
